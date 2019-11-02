@@ -67,7 +67,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
         //parse contact num to int
         contactNum=Integer.parseInt(contactString);
 
-
+    //commit check
     }
 
 
