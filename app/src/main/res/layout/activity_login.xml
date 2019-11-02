@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/loginbg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Login">
+
+    <RelativeLayout
+        android:layout_margin="10dp"
+        android:id="@+id/rl_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            android:id="@+id/welcome_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:text="Welcome "
+            android:layout_marginTop="10dp"
+            android:textColor="@color/white"
+            android:textSize="50sp"
+            android:textStyle="bold">
+        </TextView>
+
+        <TextView
+            android:id="@+id/login_text"
+            android:layout_below="@+id/welcome_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:text="What are you waiting for? Login now!"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            >
+        </TextView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_username"
+            android:layout_below="@+id/login_text"
+            android:layout_marginTop="15dp"
+            app:cardCornerRadius="25dp"
+            android:layout_marginBottom="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/login_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:hint="Username"
+                android:textAlignment="center"
+                android:drawableLeft="@drawable/person_gray"
+                android:background="@android:color/transparent"
+                android:padding="10dp">
+            </EditText>
+
+        </androidx.cardview.widget.CardView>
+
+        <View
+            android:id="@+id/view1"
+            android:layout_width="match_parent"
+            android:background="@android:color/transparent"
+            android:layout_below="@+id/cv_username"
+            android:layout_height="2dp"
+            android:layout_marginBottom="20dp"/>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_password"
+            android:layout_below="@+id/view1"
+            app:cardCornerRadius="25dp"
+            android:layout_marginBottom="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/login_password"
+                android:inputType="textPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:hint="Password"
+                android:textAlignment="center"
+                android:drawableLeft="@drawable/lock_gray"
+                android:background="@android:color/transparent"
+                android:padding="10dp">
+            </EditText>
+
+
+        </androidx.cardview.widget.CardView>
+        <View
+            android:id="@+id/view2"
+            android:layout_width="match_parent"
+            android:background="@android:color/transparent"
+            android:layout_below="@+id/cv_password"
+            android:layout_height="2dp"
+            android:layout_marginBottom="20dp"/>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_login_button"
+            app:cardCornerRadius="25dp"
+            android:layout_below="@+id/view2"
+            android:background="@color/cyan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:text="LOGIN"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="30sp"
+                android:id="@+id/login_button"
+                android:background="@drawable/custom_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </androidx.cardview.widget.CardView>
+
+        <View
+            android:id="@+id/view3"
+            android:layout_width="match_parent"
+            android:background="@android:color/transparent"
+            android:layout_below="@+id/cv_login_button"
+            android:layout_height="2dp"
+            android:layout_marginBottom="20dp"/>
+
+        <TextView
+            android:id="@+id/register_text"
+            android:textSize="17sp"
+            android:textColor="@color/white"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/view3"
+            android:text="Not A Memeber Yet? Register Now!"
+            android:textAlignment="center"
+            android:background="@android:color/transparent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </TextView>
+
+        <View
+            android:id="@+id/view4"
+            android:layout_width="match_parent"
+            android:background="@android:color/transparent"
+            android:layout_below="@+id/register_text"
+            android:layout_height="2dp"
+            android:layout_marginBottom="20dp"/>
+
+        <androidx.cardview.widget.CardView
+            android:layout_marginBottom="35dp"
+            android:id="@+id/cv_register_button"
+            app:cardCornerRadius="25dp"
+            android:layout_below="@+id/view4"
+            android:background="@color/cyan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:text="REGISTER"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="30sp"
+                android:id="@+id/register_button"
+                android:background="@drawable/custom_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </androidx.cardview.widget.CardView>
+
+    </RelativeLayout>
+
+</ScrollView>
+

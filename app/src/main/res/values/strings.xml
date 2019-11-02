@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">UITest</string>
+    <string name="user_type">Choose</string>
+    <string name="gender">Gender</string>
+
+    <string-array name="user_type_array">
+        <item>Driver</item>
+        <item>Tow Car Driver</item>
+    </string-array>
+
+    <string-array name="gender_array">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+
+</resources>
