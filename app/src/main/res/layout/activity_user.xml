@@ -30,35 +30,17 @@
 
             <ImageView
                 android:id="@+id/user_pic"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="20dp"
-                android:layout_marginStart="130dp"
-                android:layout_marginLeft="130dp"
-                android:layout_marginEnd="131dp"
-                android:layout_marginRight="131dp"
+                android:layout_width="match_parent"
+                android:layout_height="125dp"
                 android:src="@drawable/user">
 
             </ImageView>
 
             <TextView
                 android:id="@+id/user_name"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/user_pic"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginStart="135dp"
-                android:layout_marginLeft="135dp"
-                android:layout_marginTop="7dp"
-                android:layout_marginEnd="131dp"
-                android:layout_marginRight="131dp"
                 android:text="Username"
                 android:gravity="center"
                 android:textSize="20sp">
