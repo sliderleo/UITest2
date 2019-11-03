@@ -2,6 +2,7 @@ package com.example.uitest;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
     private DatePickerDialog picker;
     private Spinner sGender,sUser;
     private Button submitBtn;
+    private AlertDialog ab;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +88,8 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                                 }
                             },year,month,day);
                             picker.show();break;
+
+            case R.id.submit_button:
 
         }
     }
