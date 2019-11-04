@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">UITest</string>
     <string name="user_type">Choose</string>
+
     <string name="gender">Gender</string>
 
     <string-array name="user_type_array">
@@ -13,4 +14,50 @@
         <item>Female</item>
     </string-array>
 
+    <string-array name="car_colors">
+        <item>Black</item>
+        <item>Blue</item>
+        <item>Gold</item>
+        <item>Green</item>
+        <item>Grey</item>
+        <item>Orange</item>
+        <item>Pink</item>
+        <item>Purple</item>
+        <item>Red</item>
+        <item>Silver</item>
+        <item>White</item>
+        <item>Yellow</item>
+        <item>Others</item>
+    </string-array>
+
+    <string-array name="car_brand">
+        <item>Audi</item>
+        <item>BMW</item>
+        <item>Cherry</item>
+        <item>Chevrolet</item>
+        <item>Citroen</item>
+        <item>Daihatsu</item>
+        <item>Ford</item>
+        <item>Honda</item>
+        <item>Hyundai</item>
+        <item>Inokom</item>
+        <item>Isuzu</item>
+        <item>Jaguar</item>
+        <item>KIA</item>
+        <item>Lexus</item>
+        <item>Mazda</item>
+        <item>Mercedes Benz</item>
+        <item>Mitsubishi</item>
+        <item>Nissan</item>
+        <item>Perodua</item>
+        <item>Peugeot</item>
+        <item>Proton</item>
+        <item>Renault</item>
+        <item>Subaru</item>
+        <item>Suzuki</item>
+        <item>Toyota</item>
+        <item>Volvo</item>
+        <item>Volkswagen</item>
+        <item>Others</item>
+    </string-array>
 </resources>
