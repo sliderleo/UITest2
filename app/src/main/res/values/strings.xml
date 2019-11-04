@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">UITest</string>
     <string name="user_type">Choose</string>
-
     <string name="gender">Gender</string>
+    <string name="car_brand">Car Brand</string>
+    <string name="car_brand_text">Car Brand</string>
+    <string name="car_color_text">Car Color</string>
 
     <string-array name="user_type_array">
         <item>Driver</item>
