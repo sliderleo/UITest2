@@ -23,7 +23,10 @@ public class AddDialog extends AppCompatDialogFragment {
         builder.setView(view).setTitle("Add Vehicle").setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int i) {
-
+                String carPlate = etPlate.getText().toString();
+                String model=etModel.getText().toString();
+                String brand=spinnerBrand.getSelectedItem().toString();
+                String color=spinnerColor.getSelectedItem().toString();
             }
         }).setPositiveButton("Add", new DialogInterface.OnClickListener() {
             @Override
@@ -33,7 +36,8 @@ public class AddDialog extends AppCompatDialogFragment {
         });
         etPlate=view.findViewById(R.id.et_car_plate);
         etModel=view.findViewById(R.id.et_car_model);
-
+        spinnerBrand=view.findViewById(R.id.spinner_brand);
+        spinnerColor=view.findViewById(R.id.spinner_color);
         return builder.create();
     }
 }
