@@ -5,6 +5,8 @@
     <string name="car_brand_text">Car Brand</string>
     <string name="car_color_text">Car Color</string>
 
+
+    <string name="workshop">Workshops</string>
     <string name="username">Username :</string>
     <string name="email">Email :</string>
     <string name="name">Name :</string>

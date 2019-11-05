@@ -169,6 +169,7 @@
                 android:textSize="30sp"
                 android:id="@+id/register_button"
                 android:background="@drawable/custom_button"
+                android:onClick="toRegister"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         </androidx.cardview.widget.CardView>
