@@ -72,4 +72,5 @@
         <item>Others</item>
     </string-array>
     <string name="title_activity_request">Map</string>
+    <string name="title_activity_workshop">Map</string>
 </resources>

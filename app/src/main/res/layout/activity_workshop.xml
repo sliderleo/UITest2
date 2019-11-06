@@ -21,6 +21,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="-16dp" />
 
+
     <fragment
         android:layout_below="@+id/workshop_text"
         android:layout_width="match_parent"

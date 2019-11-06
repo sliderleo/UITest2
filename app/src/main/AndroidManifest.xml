@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="com.google.android.providers.gdf.permisson.READ_GSERVICES" />
 
     <application
         android:allowBackup="true"
@@ -32,8 +34,11 @@
             android:value="@string/google_maps_key" />
 
         <activity
+            android:name=".Workshop"
+            android:label="@string/title_activity_workshop"></activity>
+        <activity
             android:name=".Request"
-            android:label="@string/title_activity_request"></activity>
+            android:label="@string/title_activity_request" />
         <activity android:name=".Location" />
         <activity android:name=".Register" />
         <activity android:name=".Login" />
