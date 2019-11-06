@@ -5,7 +5,7 @@
     <string name="car_brand_text">Car Brand</string>
     <string name="car_color_text">Car Color</string>
 
-
+    <string name="request">Call For Tow</string>
     <string name="workshop">Workshops</string>
     <string name="username">Username :</string>
     <string name="email">Email :</string>
@@ -71,4 +71,5 @@
         <item>Volkswagen</item>
         <item>Others</item>
     </string-array>
+    <string name="title_activity_request">Map</string>
 </resources>
