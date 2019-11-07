@@ -110,7 +110,6 @@ public class Workshop extends FragmentActivity implements OnMapReadyCallback , G
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
 
 
-
         currentUserLocationMarker=mMap.addMarker(markerOptions);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomBy(12));

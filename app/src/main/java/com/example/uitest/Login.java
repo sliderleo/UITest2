@@ -14,14 +14,14 @@ public class Login extends AppCompatActivity{
     String username,password;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        EditText UsernameET,PasswordET;
+
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         //editText
-        etUsername=(EditText)findViewById(R.id.login_username);
-        etPassword=(EditText)findViewById(R.id.login_password);
+        etUsername=findViewById(R.id.login_username);
+        etPassword=findViewById(R.id.login_password);
 
 
     }
