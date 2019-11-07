@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private CardView prof,vehicle,tow,location;
+    private CardView prof,vehicle,tow,location,logout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         vehicle= findViewById(R.id.vehicleCard);
         tow=findViewById(R.id.towCard);
         location=findViewById(R.id.locationCard);
+        logout=findViewById(R.id.logout);
 
         prof.setOnClickListener(this);
         vehicle.setOnClickListener(this);

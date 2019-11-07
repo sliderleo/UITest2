@@ -39,7 +39,6 @@
         <activity
             android:name=".Request"
             android:label="@string/title_activity_request" />
-        <activity android:name=".Location" />
         <activity android:name=".Register" />
         <activity android:name=".Login" />
         <activity android:name=".User" />
