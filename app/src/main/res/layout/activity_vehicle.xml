@@ -13,6 +13,7 @@
     android:orientation="vertical">
 
     <RelativeLayout
+        android:id="@+id/rl_vehicle1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -59,25 +60,27 @@
     </RelativeLayout>
 
 
-    <GridLayout
-        android:layout_marginTop="22dp"
+    <RelativeLayout
+        android:id="@+id/rl_vehicle2"
+        android:layout_below="@+id/rl_vehicle1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:columnCount="1"
-        android:rowCount="4"
-        >
+        android:layout_marginTop="80dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="13dp">
 
-    </GridLayout>
+        <ListView
+            android:id="@+id/car_list_view"
+            android:background="@color/colorGrey"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"/>
 
 
-
-
+    </RelativeLayout>
 
 
 
 </LinearLayout>
-
-
 
 </ScrollView>
 

@@ -1,5 +1,6 @@
 package com.example.uitest;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 
@@ -8,10 +9,19 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class Login extends AppCompatActivity{
-    private EditText etUsername,etPassword;
-    String username,password;
+    EditText et_email,et_password;
+    Button login_btn;
+    FirebaseAuth firebaseAuth;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -19,11 +29,55 @@ public class Login extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        firebaseAuth=FirebaseAuth.getInstance();
         //editText
-        etUsername=findViewById(R.id.login_username);
-        etPassword=findViewById(R.id.login_password);
+        et_email=findViewById(R.id.login_email);
+        et_password=findViewById(R.id.login_password);
+        login_btn=findViewById(R.id.login_button);
 
+        login_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email=et_email.getText().toString().trim();
+                String password=et_password.getText().toString().trim();
 
+                if(email.isEmpty() && password.isEmpty()){
+                    Toast.makeText(Login.this, "The field is empty",Toast.LENGTH_SHORT).show();
+                }else if(email.isEmpty()){
+                    Toast.makeText(Login.this, "Email is empty",Toast.LENGTH_SHORT).show();
+                }else if(password.isEmpty()){
+                    Toast.makeText(Login.this, "Password is empty",Toast.LENGTH_SHORT).show();
+                }else{
+                    firebaseAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(Login.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if(!task.isSuccessful()){
+                                Toast.makeText(Login.this, "Error please try again",Toast.LENGTH_SHORT).show();
+                            }else{
+                                Toast.makeText(Login.this, "Logged in successfully",Toast.LENGTH_SHORT).show();
+                                Intent i = new Intent(Login.this, MainActivity.class);
+                                startActivity(i);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
+        mAuthStateListener=new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser mFireBaseUSer = firebaseAuth.getCurrentUser();
+                if(mFireBaseUSer !=null){
+                    Toast.makeText(Login.this, "You are logged in",Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(Login.this, MainActivity.class);
+                    startActivity(i);
+
+                }else{
+                    Toast.makeText(Login.this, "Please login",Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
     }
 
     public void toRegister(View v){
@@ -31,13 +85,11 @@ public class Login extends AppCompatActivity{
         i = new Intent(this, Register.class);startActivity(i);
     }
 
-    public void onLogin(View v) {
-        String username= etUsername.getText().toString();
-        String password= etPassword.getText().toString();
-        String type = "login";
-        LoginBackground backgroundWorker = new LoginBackground(this);
-        backgroundWorker.execute(type,username,password);
-    }
 
+    @Override
+    protected void onStart(){
+        super.onStart();
+        firebaseAuth.addAuthStateListener(mAuthStateListener);
+    }
 
 }

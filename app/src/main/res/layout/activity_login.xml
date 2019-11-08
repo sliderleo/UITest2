@@ -50,13 +50,13 @@
             android:layout_height="wrap_content">
 
             <EditText
-                android:id="@+id/login_username"
+                android:id="@+id/login_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:hint="Username"
+                android:hint="Email"
                 android:textAlignment="center"
-                android:drawableLeft="@drawable/person_gray"
+                android:drawableLeft="@drawable/email"
                 android:background="@android:color/transparent"
                 android:padding="10dp">
             </EditText>
@@ -87,7 +87,7 @@
                 android:layout_margin="10dp"
                 android:hint="Password"
                 android:textAlignment="center"
-                android:drawableLeft="@drawable/lock_gray"
+                android:drawableLeft="@drawable/lock_black"
                 android:background="@android:color/transparent"
                 android:padding="10dp">
             </EditText>
@@ -119,7 +119,6 @@
                 android:background="@drawable/custom_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="onLogin"
                 />
 
         </androidx.cardview.widget.CardView>

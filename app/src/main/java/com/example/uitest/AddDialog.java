@@ -8,8 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatDialogFragment;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class AddDialog extends AppCompatDialogFragment {
     private EditText etPlate,etModel;
@@ -19,25 +25,34 @@ public class AddDialog extends AppCompatDialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
+
         View view = inflater.inflate(R.layout.layout_add_vehicle, null);
-        builder.setView(view).setTitle("Add Vehicle").setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        etPlate=view.findViewById(R.id.et_car_plate);
+        etModel=view.findViewById(R.id.et_car_model);
+        spinnerBrand=view.findViewById(R.id.spinner_brand);
+        spinnerColor=view.findViewById(R.id.spinner_color);
+
+        builder.setView(view).setTitle("Add New Vehicle").setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+
+            }
+        }).setPositiveButton("Add", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int i) {
                 String carPlate = etPlate.getText().toString();
                 String model=etModel.getText().toString();
                 String brand=spinnerBrand.getSelectedItem().toString();
                 String color=spinnerColor.getSelectedItem().toString();
-            }
-        }).setPositiveButton("Add", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int i) {
-
+                CarInfo car = new CarInfo(carPlate,brand,model,color);
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                String id = user.getUid();
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference().child("Car").child(id);
+                myRef.push().setValue(car);
             }
         });
-        etPlate=view.findViewById(R.id.et_car_plate);
-        etModel=view.findViewById(R.id.et_car_model);
-        spinnerBrand=view.findViewById(R.id.spinner_brand);
-        spinnerColor=view.findViewById(R.id.spinner_color);
+
         return builder.create();
     }
 }

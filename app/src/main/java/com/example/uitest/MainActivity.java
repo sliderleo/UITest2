@@ -6,9 +6,14 @@ import androidx.cardview.widget.CardView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private CardView prof,vehicle,tow,location,logout;
+    FirebaseAuth mFirebaseAuth;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,6 +28,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         vehicle.setOnClickListener(this);
         tow.setOnClickListener(this);
         location.setOnClickListener(this);
+
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+                Intent i = new Intent(MainActivity.this, Login.class);
+                Toast.makeText(MainActivity.this, "Logged out ",Toast.LENGTH_SHORT).show();
+                startActivity(i);
+            }
+        });
     }
 
         @Override
