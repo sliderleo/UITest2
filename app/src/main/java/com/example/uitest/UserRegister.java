@@ -33,8 +33,8 @@ public class UserRegister extends AppCompatActivity {
         etContact=findViewById(R.id.et_contact);
 
         //spinner
-        sUser = findViewById(R.id.spinner_gender);
-        sGender =findViewById(R.id.spinner_user);
+        sUser = findViewById(R.id.spinner_user);
+        sGender =findViewById(R.id.spinner_gender);
 
         //dob settings
         etDob= findViewById(R.id.et_dob);

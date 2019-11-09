@@ -3,6 +3,7 @@ package com.example.uitest;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -24,8 +25,10 @@ public class User extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
-        backBtn=  (ImageButton) findViewById(R.id.backArrow);
-        editBtn=(ImageButton)findViewById(R.id.editButton);
+        backBtn= findViewById(R.id.backArrow);
+        editBtn= findViewById(R.id.editButton);
+
+
 
         tv_name=findViewById(R.id.name_tv);
         tv_gender=findViewById(R.id.gender_tv);
@@ -64,12 +67,6 @@ public class User extends AppCompatActivity {
 
 
 
-
-
-
-
-
-
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -77,12 +74,13 @@ public class User extends AppCompatActivity {
             }
         });
 
+
         editBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(User.this, UserEdit.class);
+                startActivity(intent);
             }
         });
-
     }
 }
