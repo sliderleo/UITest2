@@ -28,9 +28,18 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class Workshop extends FragmentActivity implements OnMapReadyCallback , GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
-
+    private ChildEventListener mChildEventListener;
+    private DatabaseReference mWorkshop;
+    private FirebaseDatabase database;
+    Marker marker,wMarker;
     private GoogleMap mMap;
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
@@ -38,10 +47,16 @@ public class Workshop extends FragmentActivity implements OnMapReadyCallback , G
     private Marker currentUserLocationMarker;
     private static final int REQUEST_USER_LOCATION_CODE = 99;
     private LocationManager locationManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_workshop);
+
+        database=FirebaseDatabase.getInstance();
+        mWorkshop=database.getReference("Workshop");
+
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             checkUserLocationPermission();
         }
@@ -49,8 +64,40 @@ public class Workshop extends FragmentActivity implements OnMapReadyCallback , G
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        mWorkshop.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                String name = dataSnapshot.child("name").getValue().toString();
+                String latitudeString = dataSnapshot.child("latitude").getValue().toString();
+                String longitudeString = dataSnapshot.child("longitude").getValue().toString();
+                double latitude = Double.parseDouble(latitudeString);
+                double longitude=Double.parseDouble(longitudeString);
+                LatLng location=new LatLng(latitude,longitude);
+                mMap.addMarker(new MarkerOptions().position(location).title(name));
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 
@@ -68,9 +115,10 @@ public class Workshop extends FragmentActivity implements OnMapReadyCallback , G
         mMap = googleMap;
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             buildGoogleApiClient();
-
             mMap.setMyLocationEnabled(true);
         }
+
+
     }
 
     @Override
