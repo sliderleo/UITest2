@@ -1,18 +1,22 @@
 package com.example.uitest;
 
 public class CarInfo {
-    String plate,brand,model,color;
+    String plate,brand,model,color,carId;
     public CarInfo(){
 
     }
-    public CarInfo(String plate,String brand,String model,String color){
+    public CarInfo(String plate,String brand,String model,String color,String carId){
         this.plate=plate;
         this.brand=brand;
         this.model=model;
         this.color=color;
+        this.carId=carId;
 
     }
 
+    public String getCarId(){
+        return  this.carId;
+    }
     public String getPlate(){
         return this.plate;
     }

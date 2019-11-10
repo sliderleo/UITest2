@@ -44,12 +44,16 @@ public class AddDialog extends AppCompatDialogFragment {
                 String model=etModel.getText().toString();
                 String brand=spinnerBrand.getSelectedItem().toString();
                 String color=spinnerColor.getSelectedItem().toString();
-                CarInfo car = new CarInfo(carPlate,brand,model,color);
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 String id = user.getUid();
+
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference myRef = database.getReference().child("Car").child(id);
-                myRef.push().setValue(car);
+                String carId=myRef.push().getKey();
+
+                CarInfo car = new CarInfo(carPlate,brand,model,color,carId);
+                myRef.child(carId).setValue(car);
+
             }
         });
 
