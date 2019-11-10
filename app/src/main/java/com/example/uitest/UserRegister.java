@@ -25,6 +25,7 @@ public class UserRegister extends AppCompatActivity {
     private DatePickerDialog picker;
     private Spinner sGender,sUser;
     private Button submit_button;
+    String name,spinnerGender,spinnerUser,contactString,dob,id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,10 +62,10 @@ public class UserRegister extends AppCompatActivity {
         submit_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String name,spinnerGender,spinnerUser,contactString,dob;
+
                 int contactNum=0;
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                String id = user.getUid();
+                id = user.getUid();
 
                 spinnerGender = sGender.getSelectedItem().toString();
                 spinnerUser=sUser.getSelectedItem().toString();
@@ -88,11 +89,17 @@ public class UserRegister extends AppCompatActivity {
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                     DatabaseReference myRef = database.getReference().child("Users").child(id);
                     myRef.setValue(userInfo);
+
+                    if(spinnerUser.equals("Tow Car Driver")){
+                       addStatus();
+                    }
                     Toast.makeText(UserRegister.this, "Added",Toast.LENGTH_SHORT).show();
                     toLogin();
                 }else{
                     Toast.makeText(UserRegister.this,"Error Occurred!",Toast.LENGTH_SHORT).show();
                 }
+
+
 
             }
         });
@@ -102,6 +109,13 @@ public void toLogin(){
     FirebaseAuth.getInstance().signOut();
     Intent i = new Intent(UserRegister.this, Login.class);
     startActivity(i);
+}
+
+public void addStatus(){
+    Status stat=new Status(name,id,false);
+    FirebaseDatabase databaseTow = FirebaseDatabase.getInstance();
+    DatabaseReference towRef = databaseTow.getReference().child("Status").child(id);
+    towRef.setValue(stat);
 }
 
 }

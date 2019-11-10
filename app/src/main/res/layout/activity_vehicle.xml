@@ -50,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/vehicle_pic"
-            android:text="Vehicle Owned: "
+            android:text="My Vehicle"
             android:gravity="center"
             android:textSize="18sp">
 
