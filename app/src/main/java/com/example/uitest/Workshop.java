@@ -77,9 +77,7 @@ public class Workshop extends FragmentActivity implements OnMapReadyCallback , G
                 LatLng location=new LatLng(latitude,longitude);
                 mMap.addMarker(new MarkerOptions().position(location).title(name));
 
-               if(dataSnapshot.child("name").getValue().toString().equals("Gi Hoe Motor Work Sdn Bhd") ){
-                   Toast.makeText(Workshop.this,"Success", Toast.LENGTH_SHORT).show();
-               }
+
 
             }
 

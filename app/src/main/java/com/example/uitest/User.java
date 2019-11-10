@@ -19,7 +19,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class User extends AppCompatActivity {
     private ImageButton backBtn,editBtn;
-    private TextView tv_name,tv_gender,tv_dob,tv_contact,tv_email;
+    private TextView tv_name,tv_gender,tv_dob,tv_contact,tv_email,tv_type;
     DatabaseReference myRef;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +29,7 @@ public class User extends AppCompatActivity {
         editBtn= findViewById(R.id.editButton);
 
 
-
+        tv_type=findViewById(R.id.user_type);
         tv_name=findViewById(R.id.name_tv);
         tv_gender=findViewById(R.id.gender_tv);
         tv_dob=findViewById(R.id.dob_tv);
@@ -39,7 +39,7 @@ public class User extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String id = user.getUid();
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         myRef= database.getReference().child("Users").child(id);
 
@@ -51,12 +51,14 @@ public class User extends AppCompatActivity {
                 String gender= dataSnapshot.child("gender").getValue().toString();
                 String dob = dataSnapshot.child("dob").getValue().toString();
                 String contact=dataSnapshot.child("contact").getValue().toString();
+                String type=dataSnapshot.child("type").getValue().toString();
                 String email = user.getEmail();
                 tv_name.setText("Name: "+name);
                 tv_gender.setText("Gender: "+gender);
                 tv_dob.setText("DOB: "+dob);
                 tv_contact.setText("Contact: "+contact);
                 tv_email.setText("Email: "+email);
+                tv_type.setText(type);
             }
 
             @Override
