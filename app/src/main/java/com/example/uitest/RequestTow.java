@@ -17,7 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class RequestTow extends AppCompatActivity {
+public class RequestTow extends AppCompatActivity{
     private Button onButton,offButton;
     private TextView tv_status;
     FirebaseUser user;

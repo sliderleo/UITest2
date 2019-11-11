@@ -1,25 +1,29 @@
 package com.example.uitest;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationManager;
-import android.os.Build;
-import android.os.Bundle;
-import android.view.Menu;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import com.directions.route.AbstractRouting;
+import com.directions.route.Route;
+import com.directions.route.RouteException;
+import com.directions.route.Routing;
+import com.directions.route.RoutingListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -33,6 +37,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -43,40 +49,43 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Request extends FragmentActivity implements OnMapReadyCallback , GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
-    private TextView tv_userlocation,tv_selected_workshop;
-    private Spinner car_spinner1,tow_spinner;
+public class Request extends FragmentActivity implements OnMapReadyCallback , GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, RoutingListener {
+    private TextView tv_userlocation, tv_selected_workshop;
+    private Spinner car_spinner1, tow_spinner;
     private GoogleMap mMap;
-    private DatabaseReference myRef,carRef,towRef;
+    private DatabaseReference myRef, carRef, towRef;
     private FirebaseDatabase database;
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
     private Location lastLocation;
-    private Marker currentUserLocationMarker,markerWorkshop;
+    private LatLng destinationLatLng;
+    private Marker currentUserLocationMarker, markerWorkshop;
+    private Button requestBtn;
     private static final int REQUEST_USER_LOCATION_CODE = 99;
-    private double userLat,userLong,locationLat,locationLong;
+    private double userLat, userLong, locationLat, locationLong;
     LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        polylines = new ArrayList<>();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request);
-        car_spinner1=findViewById(R.id.car_spinner);
-        tow_spinner=findViewById(R.id.tow_spinner);
-        tv_userlocation=findViewById(R.id.user_current_location);
-        tv_selected_workshop=findViewById(R.id.selected_workshop);
+        car_spinner1 = findViewById(R.id.car_spinner);
+        tow_spinner = findViewById(R.id.tow_spinner);
+        tv_userlocation = findViewById(R.id.user_current_location);
+        tv_selected_workshop = findViewById(R.id.selected_workshop);
+        requestBtn = findViewById(R.id.request_button);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String id = user.getUid();
 
-        database=FirebaseDatabase.getInstance();
-        myRef=database.getReference("Workshop");
-        carRef=database.getReference("Car").child(id);
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference("Workshop");
+        carRef = database.getReference("Car").child(id);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkUserLocationPermission();
         }
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -86,8 +95,6 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
 
-
-
         myRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -95,8 +102,8 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
                 String latitudeString = dataSnapshot.child("latitude").getValue().toString();
                 String longitudeString = dataSnapshot.child("longitude").getValue().toString();
                 double latitude = Double.parseDouble(latitudeString);
-                double longitude=Double.parseDouble(longitudeString);
-                LatLng location=new LatLng(latitude,longitude);
+                double longitude = Double.parseDouble(longitudeString);
+                LatLng location = new LatLng(latitude, longitude);
 
                 mMap.addMarker(new MarkerOptions().position(location).title(name));
             }
@@ -127,7 +134,7 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 final List<String> carList = new ArrayList<String>();
-                for(DataSnapshot dataSnapshot1: dataSnapshot.getChildren()){
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                     String car = dataSnapshot1.child("plate").getValue(String.class);
                     carList.add(car);
                 }
@@ -142,18 +149,16 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
             }
         });
 
-        towRef=database.getReference("Status");
+        towRef = database.getReference("Status");
         towRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 String duty = dataSnapshot.child("duty").getValue().toString();
-                if(duty.equals(true)){
+                if (duty.equals(true)) {
                     String name = dataSnapshot.child("name").getValue().toString();
                     String towId = dataSnapshot.child("userId").getValue().toString();
 
                 }
-
-
 
 
             }
@@ -185,27 +190,27 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<String> towList = new ArrayList<>();
-                for(DataSnapshot dataSnapshot1: dataSnapshot.getChildren()){
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                     String dutyString = dataSnapshot1.child("duty").getValue().toString();
-                    Toast.makeText(Request.this, dutyString,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Request.this, dutyString, Toast.LENGTH_SHORT).show();
 
-                    if(dutyString.equals("on")){
+                    if (dutyString.equals("on")) {
                         String driver = dataSnapshot1.child("name").getValue().toString();
                         towList.add(driver);
-                    }else if (dutyString == "off"){
+                    } else if (dutyString == "off") {
 //
                     }
 
                 }
 
-                if(towList.isEmpty()){
-                    String msg="No Tow Driver Available";
+                if (towList.isEmpty()) {
+                    String msg = "No Tow Driver Available";
                     towList.add(msg);
                 }
 
-                  ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(Request.this, android.R.layout.simple_spinner_item, towList);
-                  arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                  tow_spinner.setAdapter(arrayAdapter);
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(Request.this, android.R.layout.simple_spinner_item, towList);
+                arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                tow_spinner.setAdapter(arrayAdapter);
             }
 
             @Override
@@ -214,9 +219,25 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
             }
         });
 
+        requestBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getRouteToMarker(destinationLatLng);
+            }
+        });
+
     }
 
 
+    private void getRouteToMarker(LatLng pickupLatLng) {
+        Routing routing = new Routing.Builder()
+                .travelMode(AbstractRouting.TravelMode.DRIVING)
+                .withListener(this)
+                .alternativeRoutes(false)
+                .waypoints(new LatLng(locationLat, locationLong), pickupLatLng)
+                .build();
+        routing.execute();
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -224,18 +245,19 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                LatLng position=marker.getPosition();
-                    String locationName=marker.getTitle();
-                    locationLat=position.latitude;
-                    locationLong=position.longitude;
-                    Toast.makeText(Request.this, locationName+" is selected.",Toast.LENGTH_SHORT).show();
-                    tv_selected_workshop.setText("Selected Workshop: "+locationName);
-
+                LatLng position = marker.getPosition();
+                String locationName = marker.getTitle();
+                //workshop lat and long
+                locationLat = position.latitude;
+                locationLong = position.longitude;
+                Toast.makeText(Request.this, locationName + " is selected.", Toast.LENGTH_SHORT).show();
+                tv_selected_workshop.setText("Selected Workshop: " + locationName);
+                destinationLatLng = position;
                 return true;
 
             }
         });
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
@@ -243,13 +265,13 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        locationRequest=new LocationRequest();
+        locationRequest = new LocationRequest();
         locationRequest.setInterval(1100);
         locationRequest.setFastestInterval(1100);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest,this);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
         }
     }
 
@@ -265,9 +287,9 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
 
     @Override
     public void onLocationChanged(Location location) {
-        lastLocation=location;
+        lastLocation = location;
 
-        if(currentUserLocationMarker != null){
+        if (currentUserLocationMarker != null) {
             currentUserLocationMarker.remove();
 
         }
@@ -276,62 +298,112 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
         markerOptions.position(latLng);
         markerOptions.title("User Current Location");
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-        userLat=location.getLatitude();
-        userLong=location.getLongitude();
+        //user location
+        userLat = location.getLatitude();
+        userLong = location.getLongitude();
         String latitude = Double.toString(location.getLatitude());
-        String longitude= Double.toString(location.getLongitude());
-        tv_userlocation.setText("Latitude:"+latitude+" Longitude:"+longitude);
+        String longitude = Double.toString(location.getLongitude());
+        tv_userlocation.setText("Latitude:" + latitude + " Longitude:" + longitude);
 
-        currentUserLocationMarker=mMap.addMarker(markerOptions);
+        currentUserLocationMarker = mMap.addMarker(markerOptions);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomBy(12));
 
-        if(googleApiClient != null){
-            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient,this);
+        if (googleApiClient != null) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
         }
     }
 
-    public boolean checkUserLocationPermission(){
-        if (ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
-            if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.ACCESS_FINE_LOCATION)){
-                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_USER_LOCATION_CODE);
-            }else {
-                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_USER_LOCATION_CODE);
+    public boolean checkUserLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_USER_LOCATION_CODE);
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_USER_LOCATION_CODE);
 
             }
             return false;
-        }else{
+        } else {
             return true;
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch(requestCode){
+        switch (requestCode) {
             case REQUEST_USER_LOCATION_CODE:
-                if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-                        if (googleApiClient == null){
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        if (googleApiClient == null) {
                             buildGoogleApiClient();
                         }
                         mMap.setMyLocationEnabled(true);
                     }
-                }else{
-                    Toast.makeText(this,"Permission Denied", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
                 }
                 return;
         }
     }
 
 
-
-
-    protected synchronized  void buildGoogleApiClient(){
-        googleApiClient=new GoogleApiClient.Builder(this)
+    protected synchronized void buildGoogleApiClient() {
+        googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this).
                         addApi(LocationServices.API)
                 .build();
         googleApiClient.connect();
     }
+
+    private List<Polyline> polylines;
+    private static final int[] COLORS = new int[]{R.color.primary_dark_material_light};
+    @Override
+    public void onRoutingFailure(RouteException e) {
+        if (e != null) {
+            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "Something went wrong, Try again", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRoutingStart() {
+
+    }
+    public void onRoutingSuccess(ArrayList<Route> route, int shortestRouteIndex) {
+        if(polylines.size()>0) {
+            for (Polyline poly : polylines) {
+                poly.remove();
+            }
+        }
+
+        polylines = new ArrayList<>();
+        //add route(s) to the map.
+        for (int i = 0; i <route.size(); i++) {
+
+            //In case of more than 5 alternative routes
+            int colorIndex = i % COLORS.length;
+
+            PolylineOptions polyOptions = new PolylineOptions();
+            polyOptions.color(getResources().getColor(COLORS[colorIndex]));
+            polyOptions.width(10 + i * 3);
+            polyOptions.addAll(route.get(i).getPoints());
+            Polyline polyline = mMap.addPolyline(polyOptions);
+            polylines.add(polyline);
+
+            Toast.makeText(getApplicationContext(),"Route "+ (i+1) +": distance - "+ route.get(i).getDistanceValue()+": duration - "+ route.get(i).getDurationValue(),Toast.LENGTH_SHORT).show();
+        }
+
+    }
+    @Override
+    public void onRoutingCancelled() {
+    }
+    private void erasePolylines(){
+        for(Polyline line : polylines){
+            line.remove();
+        }
+        polylines.clear();
+    }
+
 }
