@@ -48,10 +48,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Request extends FragmentActivity implements OnMapReadyCallback , GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
-    private TextView tv_userlocation;
-    private Spinner car_spinner1;
+    private TextView tv_userlocation,tv_selected_workshop;
+    private Spinner car_spinner1,tow_spinner;
     private GoogleMap mMap;
-    private DatabaseReference myRef,carRef;
+    private DatabaseReference myRef,carRef,towRef;
     private FirebaseDatabase database;
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
@@ -66,7 +66,9 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request);
         car_spinner1=findViewById(R.id.car_spinner);
+        tow_spinner=findViewById(R.id.tow_spinner);
         tv_userlocation=findViewById(R.id.user_current_location);
+        tv_selected_workshop=findViewById(R.id.selected_workshop);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String id = user.getUid();
 
@@ -140,6 +142,44 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
             }
         });
 
+        towRef=database.getReference("Status");
+        towRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                String duty = dataSnapshot.child("duty").getValue().toString();
+                if(duty.equals(true)){
+                    String name = dataSnapshot.child("name").getValue().toString();
+                    String towId = dataSnapshot.child("userId").getValue().toString();
+
+                }else{
+
+                }
+
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
 
     }
 
@@ -156,7 +196,7 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
                     locationLat=position.latitude;
                     locationLong=position.longitude;
                     Toast.makeText(Request.this, locationName+" is selected.",Toast.LENGTH_SHORT).show();
-
+                    tv_selected_workshop.setText("Selected Workshop: "+locationName);
 
                 return true;
 
