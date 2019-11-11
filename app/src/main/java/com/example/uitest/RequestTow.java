@@ -42,9 +42,9 @@ public class RequestTow extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String duty=dataSnapshot.child("duty").getValue().toString();
 
-                if(duty.equals("true")){
+                if(duty.equals("on")){
                     tv_status.setText("Status: On Duty");
-                }else if(duty.equals("false")){
+                }else if(duty.equals("off")){
                     tv_status.setText("Status: Off Duty");
                 }
 
@@ -59,7 +59,7 @@ public class RequestTow extends AppCompatActivity {
         onButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Boolean duty = true;
+                String duty = "on";
                 myRef.child("duty").setValue(duty);
                 tv_status.setText("Status: On Duty");
                 Toast.makeText(RequestTow.this, "Status Updated",Toast.LENGTH_SHORT).show();
@@ -69,7 +69,7 @@ public class RequestTow extends AppCompatActivity {
         offButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Boolean duty = false;
+                String duty = "off";
                 myRef.child("duty").setValue(duty);
                 tv_status.setText("Status: Off Duty");
                 Toast.makeText(RequestTow.this, "Status Updated",Toast.LENGTH_SHORT).show();

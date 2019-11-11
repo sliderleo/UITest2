@@ -151,9 +151,9 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
                     String name = dataSnapshot.child("name").getValue().toString();
                     String towId = dataSnapshot.child("userId").getValue().toString();
 
-                }else{
-
                 }
+
+
 
 
             }
@@ -179,7 +179,40 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
             }
         });
 
+        Query towQuery = towRef;
 
+        towQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<String> towList = new ArrayList<>();
+                for(DataSnapshot dataSnapshot1: dataSnapshot.getChildren()){
+                    String dutyString = dataSnapshot1.child("duty").getValue().toString();
+                    Toast.makeText(Request.this, dutyString,Toast.LENGTH_SHORT).show();
+
+                    if(dutyString.equals("on")){
+                        String driver = dataSnapshot1.child("name").getValue().toString();
+                        towList.add(driver);
+                    }else if (dutyString == "off"){
+//
+                    }
+
+                }
+
+                if(towList.isEmpty()){
+                    String msg="No Tow Driver Available";
+                    towList.add(msg);
+                }
+
+                  ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(Request.this, android.R.layout.simple_spinner_item, towList);
+                  arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                  tow_spinner.setAdapter(arrayAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
 

@@ -112,7 +112,7 @@ public void toLogin(){
 }
 
 public void addStatus(){
-    Status stat=new Status(name,id,false);
+    Status stat=new Status(name,id,"off");
     FirebaseDatabase databaseTow = FirebaseDatabase.getInstance();
     DatabaseReference towRef = databaseTow.getReference().child("Status").child(id);
     towRef.setValue(stat);
