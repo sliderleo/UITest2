@@ -7,6 +7,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -19,11 +20,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import com.directions.route.AbstractRouting;
-import com.directions.route.Route;
-import com.directions.route.RouteException;
-import com.directions.route.Routing;
-import com.directions.route.RoutingListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -37,8 +33,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -50,13 +44,15 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
-public class Request extends FragmentActivity implements OnMapReadyCallback , GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, RoutingListener {
+public class Request extends FragmentActivity implements OnMapReadyCallback , GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private TextView tv_userlocation, tv_selected_workshop;
     private Spinner car_spinner1, tow_spinner;
     private GoogleMap mMap;
-    private DatabaseReference myRef, carRef, towRef;
+    private DatabaseReference myRef, carRef, towRef, locationRef;
     private FirebaseDatabase database;
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
@@ -66,20 +62,23 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
     private Button requestBtn;
     private static final int REQUEST_USER_LOCATION_CODE = 99;
     private double userLat, userLong, locationLat, locationLong;
+    private android.location.LocationListener locationListener;
+    String id;
     LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        polylines = new ArrayList<>();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request);
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         car_spinner1 = findViewById(R.id.car_spinner);
         tow_spinner = findViewById(R.id.tow_spinner);
         tv_userlocation = findViewById(R.id.user_current_location);
         tv_selected_workshop = findViewById(R.id.selected_workshop);
         requestBtn = findViewById(R.id.request_button);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String id = user.getUid();
+        id = user.getUid();
 
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference("Workshop");
@@ -104,7 +103,6 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
                 double latitude = Double.parseDouble(latitudeString);
                 double longitude = Double.parseDouble(longitudeString);
                 LatLng location = new LatLng(latitude, longitude);
-
                 mMap.addMarker(new MarkerOptions().position(location).title(name));
             }
 
@@ -222,22 +220,26 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
         requestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getRouteToMarker(destinationLatLng);
+
             }
         });
 
+        requestBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Toast.makeText(Request.this, "Clicked", Toast.LENGTH_SHORT).show();
+
+        }
+        });
+
+
+        //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1,locationListener);
+
     }
 
 
-    private void getRouteToMarker(LatLng pickupLatLng) {
-        Routing routing = new Routing.Builder()
-                .travelMode(AbstractRouting.TravelMode.DRIVING)
-                .withListener(this)
-                .alternativeRoutes(false)
-                .waypoints(new LatLng(locationLat, locationLong), pickupLatLng)
-                .build();
-        routing.execute();
-    }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -291,8 +293,8 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
 
         if (currentUserLocationMarker != null) {
             currentUserLocationMarker.remove();
-
         }
+
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
@@ -301,9 +303,11 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
         //user location
         userLat = location.getLatitude();
         userLong = location.getLongitude();
-        String latitude = Double.toString(location.getLatitude());
-        String longitude = Double.toString(location.getLongitude());
+        final String latitude = Double.toString(location.getLatitude());
+        final String longitude = Double.toString(location.getLongitude());
         tv_userlocation.setText("Latitude:" + latitude + " Longitude:" + longitude);
+
+
 
         currentUserLocationMarker = mMap.addMarker(markerOptions);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
@@ -312,6 +316,8 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
         if (googleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
         }
+
+        updateLocation(location.getLatitude(),location.getLongitude());
     }
 
     public boolean checkUserLocationPermission() {
@@ -356,54 +362,12 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
         googleApiClient.connect();
     }
 
-    private List<Polyline> polylines;
-    private static final int[] COLORS = new int[]{R.color.primary_dark_material_light};
-    @Override
-    public void onRoutingFailure(RouteException e) {
-        if (e != null) {
-            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(this, "Something went wrong, Try again", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onRoutingStart() {
-
-    }
-    public void onRoutingSuccess(ArrayList<Route> route, int shortestRouteIndex) {
-        if(polylines.size()>0) {
-            for (Polyline poly : polylines) {
-                poly.remove();
-            }
-        }
-
-        polylines = new ArrayList<>();
-        //add route(s) to the map.
-        for (int i = 0; i <route.size(); i++) {
-
-            //In case of more than 5 alternative routes
-            int colorIndex = i % COLORS.length;
-
-            PolylineOptions polyOptions = new PolylineOptions();
-            polyOptions.color(getResources().getColor(COLORS[colorIndex]));
-            polyOptions.width(10 + i * 3);
-            polyOptions.addAll(route.get(i).getPoints());
-            Polyline polyline = mMap.addPolyline(polyOptions);
-            polylines.add(polyline);
-
-            Toast.makeText(getApplicationContext(),"Route "+ (i+1) +": distance - "+ route.get(i).getDistanceValue()+": duration - "+ route.get(i).getDurationValue(),Toast.LENGTH_SHORT).show();
-        }
-
-    }
-    @Override
-    public void onRoutingCancelled() {
-    }
-    private void erasePolylines(){
-        for(Polyline line : polylines){
-            line.remove();
-        }
-        polylines.clear();
+    public void updateLocation(double userlat,double userlong){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference().child("Location").child(id);
+        Date time= Calendar.getInstance().getTime();
+        LocationUpdate current = new LocationUpdate(userlat,userlong,time);
+        myRef.setValue(current);
     }
 
 }
