@@ -16,7 +16,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,13 +59,16 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
     private TextView tv_status;
     private GoogleMap mMap;
     private GoogleApiClient googleApiClient;
+    private ListView rListView;
     private LocationRequest locationRequest;
     private Marker currentUserLocationMarker;
     private static final int REQUEST_USER_LOCATION_CODE = 99;
     private LocationManager locationManager;
+    private ArrayList<String> mReqList = new ArrayList<>();
+    private ArrayList<String> reqId = new ArrayList<>();
     FirebaseUser user;
     FirebaseDatabase database;
-    DatabaseReference myRef,mWorkshop;
+    DatabaseReference myRef,mWorkshop,mRequest;
     String userId;
     LocationRequest locReq;
     FusedLocationProviderClient fusedLocationProviderClient;
@@ -76,6 +81,10 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
         onButton=findViewById(R.id.on_button);
         offButton=findViewById(R.id.off_button);
 
+        rListView=findViewById(R.id.request_list);
+        final ArrayAdapter<String> rArrayAdapter=new ArrayAdapter<>(getApplicationContext(),R.layout.mytextview,rListView);
+        rListView.setAdapter(rArrayAdapter);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             checkUserLocationPermission();
         }
@@ -87,8 +96,45 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
         user= FirebaseAuth.getInstance().getCurrentUser();
         userId=user.getUid();
         database = FirebaseDatabase.getInstance();
-        myRef = database.getReference().child("Status").child(userId);
 
+        mRequest=database.getReference().child("Request");
+        mRequest.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                String towId=dataSnapshot.getValue(RequestInfo.class).getTowDriverId().toString();
+                if(userId.equals(towId)){
+                    String locName=dataSnapshot.getValue(RequestInfo.class).getWorkshopName().toString();
+                    String requestId=dataSnapshot.getValue(RequestInfo.class).getRequestId().toString();
+
+                    rArrayAdapter.notifyDataSetChanged();
+
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+        myRef = database.getReference().child("Status").child(userId);
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -199,20 +245,6 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
     @Override
     public void onLocationChanged(Location location) {
         lastLocation=location;
-
-//        if(currentUserLocationMarker != null){
-//            currentUserLocationMarker.remove();
-//
-//        }
-//        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-//        MarkerOptions markerOptions = new MarkerOptions();
-//        markerOptions.position(latLng);
-//        markerOptions.title("User Current Location");
-//        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-
-
-//        currentUserLocationMarker=mMap.addMarker(markerOptions);
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomBy(12));
 
         if(googleApiClient != null){
