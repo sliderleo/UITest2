@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -43,13 +44,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 public class Request extends FragmentActivity implements OnMapReadyCallback , GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
-    private TextView tv_userlocation, tv_selected_workshop;
+    private TextView tv_userlocation, tv_selected_workshop,tv_fare;
     private Spinner car_spinner1, tow_spinner;
     private GoogleMap mMap;
     private DatabaseReference myRef, carRef, towRef, locationRef;
@@ -61,10 +63,12 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
     private Marker currentUserLocationMarker, markerWorkshop;
     private Button requestBtn;
     private static final int REQUEST_USER_LOCATION_CODE = 99;
-    private double userLat, userLong, locationLat, locationLong;
+    private double userLat, userLong, locationLat, locationLong,farePrice;
     private android.location.LocationListener locationListener;
-    String id;
+    String id, towid, locationName;
+    double price;
     LocationManager locationManager;
+    List<String> towList,towIdList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +80,7 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
         tow_spinner = findViewById(R.id.tow_spinner);
         tv_userlocation = findViewById(R.id.user_current_location);
         tv_selected_workshop = findViewById(R.id.selected_workshop);
+        tv_fare=findViewById(R.id.fare_price);
         requestBtn = findViewById(R.id.request_button);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         id = user.getUid();
@@ -136,6 +141,10 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
                     String car = dataSnapshot1.child("plate").getValue(String.class);
                     carList.add(car);
                 }
+                if(carList.isEmpty()){
+                    String text="No Vehicle Registered";
+                    carList.add(text);
+                }
                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(Request.this, android.R.layout.simple_spinner_item, carList);
                 arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 car_spinner1.setAdapter(arrayAdapter);
@@ -148,57 +157,23 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
         });
 
         towRef = database.getReference("Status");
-        towRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                String duty = dataSnapshot.child("duty").getValue().toString();
-                if (duty.equals(true)) {
-                    String name = dataSnapshot.child("name").getValue().toString();
-                    String towId = dataSnapshot.child("userId").getValue().toString();
-
-                }
-
-
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
         Query towQuery = towRef;
 
         towQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                List<String> towList = new ArrayList<>();
+                towList = new ArrayList<>();
+                towIdList=new ArrayList<>();
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                     String dutyString = dataSnapshot1.child("duty").getValue().toString();
                     Toast.makeText(Request.this, dutyString, Toast.LENGTH_SHORT).show();
 
                     if (dutyString.equals("on")) {
                         String driver = dataSnapshot1.child("name").getValue().toString();
+                        String towData=dataSnapshot1.child("userId").getValue().toString();
                         towList.add(driver);
-                    } else if (dutyString == "off") {
-//
-                    }
-
+                        towIdList.add(towData);
+                    } else if (dutyString == "off") {}
                 }
 
                 if (towList.isEmpty()) {
@@ -227,14 +202,35 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
         requestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String driverName=tow_spinner.getSelectedItem().toString();
+                int spinner =tow_spinner.getSelectedItemPosition();
+                String car = car_spinner1.getSelectedItem().toString();
+                String towdriver=towIdList.get(spinner);
 
-                Toast.makeText(Request.this, "Clicked", Toast.LENGTH_SHORT).show();
+                if(locationLat==0 && locationLong==0){
+                    Toast.makeText(Request.this,"Please select a workshop!" , Toast.LENGTH_SHORT).show();
+                }else if(driverName == "No Tow Driver Available"){
+                    Toast.makeText(Request.this,"There is no tow car driver around, please try again later!" , Toast.LENGTH_SHORT).show();
+                }else if (car == "No Vehicle Registered"){
+                    Toast.makeText(Request.this,"Please add your vehicle at the Vehicle page!" , Toast.LENGTH_SHORT).show();
+                }else{
+                    DatabaseReference reqRef=database.getReference().child("Request");
+                    String reqId=reqRef.push().getKey();
+                     RequestInfo info = new RequestInfo(userLat,userLong,locationLat,locationLong,locationName,id,towdriver,car,price,"Pending",reqId);
+                     reqRef.child(reqId).setValue(info);
+                }
 
-        }
+
+                //String test = String.valueOf(price);
+                Toast.makeText(Request.this,"Request Successfully" , Toast.LENGTH_SHORT).show();
+
+            }
         });
 
 
         //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1,locationListener);
+
+
 
     }
 
@@ -248,13 +244,23 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
             @Override
             public boolean onMarkerClick(Marker marker) {
                 LatLng position = marker.getPosition();
-                String locationName = marker.getTitle();
+                locationName = marker.getTitle();
                 //workshop lat and long
                 locationLat = position.latitude;
                 locationLong = position.longitude;
                 Toast.makeText(Request.this, locationName + " is selected.", Toast.LENGTH_SHORT).show();
                 tv_selected_workshop.setText("Selected Workshop: " + locationName);
                 destinationLatLng = position;
+                Location mylocation = new Location("");
+                Location dest_location = new Location("");
+                mylocation.setLatitude(userLat);
+                mylocation.setLongitude(userLong);
+                dest_location.setLatitude(locationLat);
+                dest_location.setLongitude(locationLong);
+                double distance = (mylocation.distanceTo(dest_location))/1000;
+                price = (distance*3)+100;
+                DecimalFormat d = new DecimalFormat("0.00");
+                tv_fare.setText("Fare price: RM"+d.format(price));
                 return true;
 
             }
@@ -317,7 +323,6 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
             LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
         }
 
-        updateLocation(location.getLatitude(),location.getLongitude());
     }
 
     public boolean checkUserLocationPermission() {
@@ -362,12 +367,32 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
         googleApiClient.connect();
     }
 
-    public void updateLocation(double userlat,double userlong){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference().child("Location").child(id);
-        Date time= Calendar.getInstance().getTime();
-        LocationUpdate current = new LocationUpdate(userlat,userlong,time);
-        myRef.setValue(current);
-    }
+//    public String getTowId(String name){
+//        final String towName = name;
+//        DatabaseReference towRef = database.getReference("Status");
+//        towRef.addChildEventListener(new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                String tName = dataSnapshot.child("name").getValue().toString();
+//                if(towName.equals(tName)){
+//                    towid=dataSnapshot.child("userId").getValue().toString();
+//                }
+//            }
+//
+//            @Override
+//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
+//
+//            @Override
+//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {}
+//
+//            @Override
+//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {}
+//        });
+//
+//        return towid;
+//    }
 
 }

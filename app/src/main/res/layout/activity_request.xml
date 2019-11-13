@@ -94,12 +94,24 @@
             android:layout_height="wrap_content"/>
     </androidx.cardview.widget.CardView>
 
+    <TextView
+        android:id="@+id/fare_price"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:text="Fare"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        android:layout_margin="5dp"
+        android:layout_below="@+id/cv_tow_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <androidx.cardview.widget.CardView
         android:layout_marginTop="15dp"
         android:layout_marginBottom="20dp"
         android:id="@+id/cv_request_button"
         app:cardCornerRadius="25dp"
-        android:layout_below="@+id/cv_tow_spinner"
+        android:layout_below="@+id/fare_price"
         android:background="@color/cyan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -113,6 +125,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </androidx.cardview.widget.CardView>
+
+
 
 </RelativeLayout>
 </ScrollView>
