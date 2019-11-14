@@ -66,10 +66,11 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
     private LocationManager locationManager;
     private ArrayList<String> mReqList = new ArrayList<>();
     private ArrayList<String> reqId = new ArrayList<>();
+    private ArrayList<RequestTow> requestTows=new ArrayList<>();
     FirebaseUser user;
     FirebaseDatabase database;
-    DatabaseReference myRef,mWorkshop,mRequest;
-    String userId;
+    DatabaseReference myRef,mWorkshop,mRequest,userRef;
+    String userId,callerName;
     LocationRequest locReq;
     FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -82,7 +83,7 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
         offButton=findViewById(R.id.off_button);
 
         rListView=findViewById(R.id.request_list);
-        final ArrayAdapter<String> rArrayAdapter=new ArrayAdapter<>(getApplicationContext(),R.layout.mytextview,rListView);
+        final ArrayAdapter<String> rArrayAdapter=new ArrayAdapter<>(getApplicationContext(),R.layout.mytextview,mReqList);
         rListView.setAdapter(rArrayAdapter);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
@@ -98,16 +99,33 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
         database = FirebaseDatabase.getInstance();
 
         mRequest=database.getReference().child("Request");
+
         mRequest.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                String towId=dataSnapshot.getValue(RequestInfo.class).getTowDriverId().toString();
+
+                String towId=dataSnapshot.child("towDriverId").getValue().toString();
                 if(userId.equals(towId)){
-                    String locName=dataSnapshot.getValue(RequestInfo.class).getWorkshopName().toString();
-                    String requestId=dataSnapshot.getValue(RequestInfo.class).getRequestId().toString();
 
-                    rArrayAdapter.notifyDataSetChanged();
+                    String locName=dataSnapshot.child("workshopName").getValue().toString();
+                    String requestId=dataSnapshot.child("id").getValue().toString();
+                    String callerId=dataSnapshot.child("userId").getValue().toString();
 
+                    userRef=database.getReference("Users").child(callerId);
+                    userRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            //User caller = new User(dataSnapshot);
+                            String callerName = dataSnapshot.child("name").getValue().toString();
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {}
+                    });
+                     //String text = "Workshop :"+locName+"\nRequest Id: "+requestId+"\nCaller Id:"+ callerId+"\nCallerName"+callerName;
+//                    reqId.add(requestId);
+//                    mReqList.add(text);
+//                    rArrayAdapter.notifyDataSetChanged();
+                    Toast.makeText(RequestTow.this, callerName,Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -348,4 +366,6 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
         LocationUpdate current = new LocationUpdate(driverLat,driverLong);
         myRef.setValue(current);
     }
+
+
 }
