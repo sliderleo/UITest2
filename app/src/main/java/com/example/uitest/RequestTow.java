@@ -70,7 +70,7 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
     FirebaseUser user;
     FirebaseDatabase database;
     DatabaseReference myRef,mWorkshop,mRequest,userRef;
-    String userId,callerName;
+    private String userId,callerName,text;
     LocationRequest locReq;
     FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -109,14 +109,14 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
 
                     String locName=dataSnapshot.child("workshopName").getValue().toString();
                     String requestId=dataSnapshot.child("id").getValue().toString();
-                    String callerId=dataSnapshot.child("userId").getValue().toString();
-
+                    final String callerId=dataSnapshot.child("userId").getValue().toString();
+                    text="Location Name:"+locName+" ReqId"+requestId+" Caller Id:"+callerId;
                     userRef=database.getReference("Users").child(callerId);
                     userRef.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            //User caller = new User(dataSnapshot);
                             String callerName = dataSnapshot.child("name").getValue().toString();
+                            text+=" Caller Name"+callerName;
                         }
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {}
@@ -125,7 +125,7 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
 //                    reqId.add(requestId);
 //                    mReqList.add(text);
 //                    rArrayAdapter.notifyDataSetChanged();
-                    Toast.makeText(RequestTow.this, callerName,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RequestTow.this, text,Toast.LENGTH_SHORT).show();
                 }
             }
 
