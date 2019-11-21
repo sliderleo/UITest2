@@ -65,11 +65,12 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
     private static final int REQUEST_USER_LOCATION_CODE = 99;
     private LocationManager locationManager;
     private ArrayList<String> mReqList = new ArrayList<>();
+    final ArrayList<String> reqList2 = new ArrayList<>();
     private ArrayList<String> reqId = new ArrayList<>();
     private ArrayList<RequestTow> requestTows=new ArrayList<>();
     FirebaseUser user;
     FirebaseDatabase database;
-    DatabaseReference myRef,mWorkshop,mRequest,userRef;
+    DatabaseReference myRef,mWorkshop,mRequest,userRef,userItemRef;
     private String userId,callerName,text;
     LocationRequest locReq;
     FusedLocationProviderClient fusedLocationProviderClient;
@@ -106,26 +107,33 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
 
                 String towId=dataSnapshot.child("towDriverId").getValue().toString();
                 if(userId.equals(towId)){
-
                     String locName=dataSnapshot.child("workshopName").getValue().toString();
                     String requestId=dataSnapshot.child("id").getValue().toString();
                     final String callerId=dataSnapshot.child("userId").getValue().toString();
-                    text="Location Name:"+locName+" ReqId"+requestId+" Caller Id:"+callerId;
-                    userRef=database.getReference("Users").child(callerId);
+                    text="Drop Off Location:"+locName+"\nReqId"+requestId;
+
+                    userRef=database.getReference().child("Users").child(callerId);
                     userRef.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            String callerName = dataSnapshot.child("name").getValue().toString();
-                            text+=" Caller Name"+callerName;
+                           final String callerName = dataSnapshot.child("name").getValue().toString();
+                            reqList2.add(callerName);
+                            //Toast.makeText(RequestTow.this, callerName,Toast.LENGTH_SHORT).show();
                         }
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {}
                     });
-                     //String text = "Workshop :"+locName+"\nRequest Id: "+requestId+"\nCaller Id:"+ callerId+"\nCallerName"+callerName;
-//                    reqId.add(requestId);
-//                    mReqList.add(text);
-//                    rArrayAdapter.notifyDataSetChanged();
-                    Toast.makeText(RequestTow.this, text,Toast.LENGTH_SHORT).show();
+                    reqId.add(requestId);
+
+                    if (reqList2 != null && !reqList2.isEmpty()) {
+                        String tt = reqList2.get(reqList2.size()-1);
+                        Toast.makeText(RequestTow.this, tt,Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(RequestTow.this, "Empty",Toast.LENGTH_SHORT).show();
+                    }
+                    //Toast.makeText(RequestTow.this, text,Toast.LENGTH_SHORT).show();
+                    //mReqList.add(text);
+                    rArrayAdapter.notifyDataSetChanged();
                 }
             }
 
@@ -146,7 +154,7 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                databaseError.getMessage();
             }
         });
 
@@ -163,12 +171,11 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
                 }else if(duty.equals("off")){
                     tv_status.setText("Status: Off Duty");
                 }
-
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                databaseError.getMessage();
             }
         });
 

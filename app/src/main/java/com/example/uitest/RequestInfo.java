@@ -1,12 +1,14 @@
 package com.example.uitest;
 
 public class RequestInfo {
-    String userId,towDriverId,requestId,status,workshopName,car,id;
+    String userId,towDriverId,requestId,status,workshopName,car,id,userName,userContact;
     double userLat,userLong,workshopLat,workshopLong,fare;
 
-    public RequestInfo(double userLat,double userLong,double workshopLat,double workshopLong,String workshopName,String userId,String towDriverId,String car,double fare,String status,String id){
+    public RequestInfo(String userName,String userContact,double userLat,double userLong,double workshopLat,double workshopLong,String workshopName,String userId,String towDriverId,String car,double fare,String status,String id){
         this.userLat=userLat;
         this.id=id;
+        this.userName=userName;
+        this.userContact=userContact;
         this.userLong=userLong;
         this.workshopLat=workshopLat;
         this.workshopLong=workshopLong;
@@ -17,8 +19,14 @@ public class RequestInfo {
         this.towDriverId=towDriverId;
         this.status=status;
     }
+     public String getUserContact(){
+        return this.userContact;
+     }
     public String getId(){
-        return id;
+        return this.id;
+    }
+    public String getUserName(){
+        return this.userName;
     }
 
     public double getFare() {

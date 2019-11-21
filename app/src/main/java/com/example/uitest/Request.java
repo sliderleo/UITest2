@@ -54,7 +54,7 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
     private TextView tv_userlocation, tv_selected_workshop,tv_fare;
     private Spinner car_spinner1, tow_spinner;
     private GoogleMap mMap;
-    private DatabaseReference myRef, carRef, towRef, locationRef;
+    private DatabaseReference myRef, carRef, towRef, userRef;
     private FirebaseDatabase database;
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
@@ -65,7 +65,7 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
     private static final int REQUEST_USER_LOCATION_CODE = 99;
     private double userLat, userLong, locationLat, locationLong,farePrice;
     private android.location.LocationListener locationListener;
-    String id, towid, locationName;
+    String id, towid, locationName,myName;
     double price;
     LocationManager locationManager;
     List<String> towList,towIdList;
@@ -88,6 +88,7 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference("Workshop");
         carRef = database.getReference("Car").child(id);
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkUserLocationPermission();
@@ -191,6 +192,22 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
 
             }
         });
+        myRef= database.getReference().child("Users").child(id);
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                String name = dataSnapshot.child("name").getValue().toString();
+                String contact=dataSnapshot.child("contact").getValue().toString();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
         requestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -204,8 +221,9 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
             public void onClick(View v) {
                 String driverName=tow_spinner.getSelectedItem().toString();
                 int spinner =tow_spinner.getSelectedItemPosition();
-                String car = car_spinner1.getSelectedItem().toString();
-                String towdriver=towIdList.get(spinner);
+                final String car = car_spinner1.getSelectedItem().toString();
+                final String towdriver=towIdList.get(spinner);
+
 
                 if(locationLat==0 && locationLong==0){
                     Toast.makeText(Request.this,"Please select a workshop!" , Toast.LENGTH_SHORT).show();
@@ -214,10 +232,16 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
                 }else if (car == "No Vehicle Registered"){
                     Toast.makeText(Request.this,"Please add your vehicle at the Vehicle page!" , Toast.LENGTH_SHORT).show();
                 }else{
-                    DatabaseReference reqRef=database.getReference().child("Request");
-                    String reqId=reqRef.push().getKey();
-                     RequestInfo info = new RequestInfo(userLat,userLong,locationLat,locationLong,locationName,id,towdriver,car,price,"Pending",reqId);
-                     reqRef.child(reqId).setValue(info);
+                    readData(new MyCallback() {
+                        @Override
+                        public void onCallback(String name,String contact) {
+                            DatabaseReference reqRef=database.getReference().child("Request");
+                            String reqId=reqRef.push().getKey();
+                            RequestInfo info = new RequestInfo(name,contact,userLat,userLong,locationLat,locationLong,locationName,id,towdriver,car,price,"Pending",reqId);
+                            reqRef.child(reqId).setValue(info);
+                        }
+                    });
+
                 }
 
 
@@ -367,32 +391,21 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
         googleApiClient.connect();
     }
 
-//    public String getTowId(String name){
-//        final String towName = name;
-//        DatabaseReference towRef = database.getReference("Status");
-//        towRef.addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                String tName = dataSnapshot.child("name").getValue().toString();
-//                if(towName.equals(tName)){
-//                    towid=dataSnapshot.child("userId").getValue().toString();
-//                }
-//            }
-//
-//            @Override
-//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
-//
-//            @Override
-//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {}
-//
-//            @Override
-//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {}
-//        });
-//
-//        return towid;
-//    }
+    public interface MyCallback {
+        void onCallback(String name,String contact);
+    }
 
+    public void readData(final MyCallback myCallback) {
+        database.getReference().child("Users").child(id).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String name = dataSnapshot.child("name").getValue().toString();
+                String contact=dataSnapshot.child("contact").getValue().toString();
+                myCallback.onCallback(name,contact);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+    }
 }
