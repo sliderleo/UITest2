@@ -9,6 +9,7 @@ import androidx.core.content.PermissionChecker;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -16,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -53,7 +55,7 @@ import java.util.ArrayList;
 
 
 public class RequestTow extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
-    private Button onButton,offButton;
+    private Button onButton,offButton,acceptButton;
     private ChildEventListener mChildEventListener;
     private Location lastLocation;
     private TextView tv_status;
@@ -62,15 +64,16 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
     private ListView rListView;
     private LocationRequest locationRequest;
     private Marker currentUserLocationMarker;
+    private Info info;
     private static final int REQUEST_USER_LOCATION_CODE = 99;
     private LocationManager locationManager;
     private ArrayList<String> mReqList = new ArrayList<>();
-    final ArrayList<String> reqList2 = new ArrayList<>();
     private ArrayList<String> reqId = new ArrayList<>();
+    private ArrayList<String> callerId = new ArrayList<>();
     private ArrayList<RequestTow> requestTows=new ArrayList<>();
     FirebaseUser user;
     FirebaseDatabase database;
-    DatabaseReference myRef,mWorkshop,mRequest,userRef,userItemRef;
+    DatabaseReference myRef,mWorkshop,mRequest,requestRef;
     private String userId,callerName,text;
     LocationRequest locReq;
     FusedLocationProviderClient fusedLocationProviderClient;
@@ -79,10 +82,11 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_tow);
+        acceptButton=findViewById(R.id.accept_button);
         tv_status=findViewById(R.id.status_text);
         onButton=findViewById(R.id.on_button);
         offButton=findViewById(R.id.off_button);
-
+        info=new Info();
         rListView=findViewById(R.id.request_list);
         final ArrayAdapter<String> rArrayAdapter=new ArrayAdapter<>(getApplicationContext(),R.layout.mytextview,mReqList);
         rListView.setAdapter(rArrayAdapter);
@@ -98,7 +102,6 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
         user= FirebaseAuth.getInstance().getCurrentUser();
         userId=user.getUid();
         database = FirebaseDatabase.getInstance();
-
         mRequest=database.getReference().child("Request");
 
         mRequest.addChildEventListener(new ChildEventListener() {
@@ -109,30 +112,17 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
                 if(userId.equals(towId)){
                     String locName=dataSnapshot.child("workshopName").getValue().toString();
                     String requestId=dataSnapshot.child("id").getValue().toString();
-                    final String callerId=dataSnapshot.child("userId").getValue().toString();
-                    text="Drop Off Location:"+locName+"\nReqId"+requestId;
+                    String callerName = dataSnapshot.child("userName").getValue().toString();
+                    String contact = dataSnapshot.child("userContact").getValue().toString();
+                    String callerID = dataSnapshot.child("userId").getValue().toString();
+                    String status=dataSnapshot.child("status").getValue().toString();
 
-                    userRef=database.getReference().child("Users").child(callerId);
-                    userRef.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                           final String callerName = dataSnapshot.child("name").getValue().toString();
-                            reqList2.add(callerName);
-                            //Toast.makeText(RequestTow.this, callerName,Toast.LENGTH_SHORT).show();
-                        }
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {}
-                    });
+                    String text = "Caller Name: "+callerName
+                            +"\nContact: "+contact+"\nDrop off Location: "+locName+"\nStatus: "+status;
+                    mReqList.add(text);
+                    callerId.add(callerID);
                     reqId.add(requestId);
 
-                    if (reqList2 != null && !reqList2.isEmpty()) {
-                        String tt = reqList2.get(reqList2.size()-1);
-                        Toast.makeText(RequestTow.this, tt,Toast.LENGTH_SHORT).show();
-                    }else{
-                        Toast.makeText(RequestTow.this, "Empty",Toast.LENGTH_SHORT).show();
-                    }
-                    //Toast.makeText(RequestTow.this, text,Toast.LENGTH_SHORT).show();
-                    //mReqList.add(text);
                     rArrayAdapter.notifyDataSetChanged();
                 }
             }
@@ -158,7 +148,30 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
             }
         });
 
+        rListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String content=reqId.get(position);
+                info.setId(content);
 
+            }
+        });
+
+        acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String str=info.getId();
+
+
+                if(str == null){
+                    Toast.makeText(RequestTow.this,"Please select a request!!",Toast.LENGTH_LONG).show();
+                }else{
+                    requestRef=database.getReference("Request/"+str);
+                    requestRef.child("status").setValue("Accepted");
+                    Toast.makeText(RequestTow.this,"Request Accepted!",Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
         myRef = database.getReference().child("Status").child(userId);
         myRef.addValueEventListener(new ValueEventListener() {
