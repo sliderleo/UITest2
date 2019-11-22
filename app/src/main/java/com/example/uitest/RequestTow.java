@@ -70,7 +70,8 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
     private ArrayList<String> mReqList = new ArrayList<>();
     private ArrayList<String> reqId = new ArrayList<>();
     private ArrayList<String> callerId = new ArrayList<>();
-    private ArrayList<RequestTow> requestTows=new ArrayList<>();
+    private ArrayList<LatLng> userLocation = new ArrayList<>();
+    private ArrayList<LatLng> workshopLocation = new ArrayList<>();
     FirebaseUser user;
     FirebaseDatabase database;
     DatabaseReference myRef,mWorkshop,mRequest,requestRef;
@@ -117,6 +118,21 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
                     String callerID = dataSnapshot.child("userId").getValue().toString();
                     String status=dataSnapshot.child("status").getValue().toString();
 
+                    String userSLong = dataSnapshot.child("userLong").getValue().toString();
+                    String userSLat = dataSnapshot.child("userLat").getValue().toString();
+                    double userLat=Double.parseDouble(userSLat);
+                    double userLong=Double.parseDouble(userSLong);
+                    LatLng userL=new LatLng(userLat,userLong);
+                    userLocation.add(userL);
+
+                    String workshopSLong = dataSnapshot.child("workshopLong").getValue().toString();
+                    String workshopSLat = dataSnapshot.child("workshopLat").getValue().toString();
+                    double workshopLat=Double.parseDouble(workshopSLat);
+                    double workshopLong=Double.parseDouble(workshopSLong);
+                    LatLng workshopL=new LatLng(workshopLat,workshopLong);
+                    workshopLocation.add(workshopL);
+
+
                     String text = "Caller Name: "+callerName
                             +"\nContact: "+contact+"\nDrop off Location: "+locName+"\nStatus: "+status;
                     mReqList.add(text);
@@ -151,7 +167,13 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
         rListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //mMap.clear();
                 String content=reqId.get(position);
+                LatLng workshoploc = workshopLocation.get(position);
+                LatLng userloc = userLocation.get(position);
+                mMap.addMarker(new MarkerOptions().position(workshoploc).title("Drop Off Location").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                mMap.addMarker(new MarkerOptions().position(userloc).title("User Current Location").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
                 info.setId(content);
 
             }
@@ -161,8 +183,6 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
             @Override
             public void onClick(View v) {
                 final String str=info.getId();
-
-
                 if(str == null){
                     Toast.makeText(RequestTow.this,"Please select a request!!",Toast.LENGTH_LONG).show();
                 }else{
@@ -216,17 +236,16 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
 
         database=FirebaseDatabase.getInstance();
         mWorkshop=database.getReference("Workshop");
-
         mWorkshop.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                String name = dataSnapshot.child("name").getValue().toString();
-                String latitudeString = dataSnapshot.child("latitude").getValue().toString();
-                String longitudeString = dataSnapshot.child("longitude").getValue().toString();
-                double latitude = Double.parseDouble(latitudeString);
-                double longitude=Double.parseDouble(longitudeString);
-                LatLng location=new LatLng(latitude,longitude);
-                mMap.addMarker(new MarkerOptions().position(location).title(name));
+//                String name = dataSnapshot.child("name").getValue().toString();
+//                String latitudeString = dataSnapshot.child("latitude").getValue().toString();
+//                String longitudeString = dataSnapshot.child("longitude").getValue().toString();
+//                double latitude = Double.parseDouble(latitudeString);
+//                double longitude=Double.parseDouble(longitudeString);
+//                LatLng location=new LatLng(latitude,longitude);
+//                mMap.addMarker(new MarkerOptions().position(location).title(name));
             }
 
             @Override
