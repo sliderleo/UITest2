@@ -55,7 +55,7 @@ import java.util.ArrayList;
 
 
 public class RequestTow extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
-    private Button onButton,offButton,acceptButton;
+    private Button onButton,offButton,acceptButton,rejectButton;
     private ChildEventListener mChildEventListener;
     private Location lastLocation;
     private TextView tv_status;
@@ -83,6 +83,7 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_tow);
+        rejectButton=findViewById(R.id.request_button);
         acceptButton=findViewById(R.id.accept_button);
         tv_status=findViewById(R.id.status_text);
         onButton=findViewById(R.id.on_button);
@@ -167,7 +168,7 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
         rListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //mMap.clear();
+                mMap.clear();
                 String content=reqId.get(position);
                 LatLng workshoploc = workshopLocation.get(position);
                 LatLng userloc = userLocation.get(position);
@@ -193,6 +194,19 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
             }
         });
 
+        rejectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String str=info.getId();
+                if(str == null){
+                    Toast.makeText(RequestTow.this,"Please select a request!!",Toast.LENGTH_LONG).show();
+                }else{
+                    requestRef=database.getReference("Request/"+str);
+                    requestRef.child("status").setValue("Rejected");
+                    Toast.makeText(RequestTow.this,"Request Rejected",Toast.LENGTH_LONG).show();
+                }
+            }
+        });
         myRef = database.getReference().child("Status").child(userId);
         myRef.addValueEventListener(new ValueEventListener() {
             @Override

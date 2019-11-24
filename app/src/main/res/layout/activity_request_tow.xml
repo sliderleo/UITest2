@@ -140,7 +140,7 @@
             app:cardCornerRadius="25dp"
             android:layout_below="@+id/cv_listview"
             android:background="@color/cyan"
-            android:layout_width="match_parent"
+            android:layout_width="210dp"
             android:layout_height="wrap_content">
             <Button
                 android:text="Accept"
@@ -153,7 +153,26 @@
                 android:layout_height="wrap_content"/>
         </androidx.cardview.widget.CardView>
 
-
+        <androidx.cardview.widget.CardView
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:id="@+id/cv_reject_button"
+            app:cardCornerRadius="25dp"
+            android:layout_below="@+id/cv_listview"
+            android:layout_toRightOf= "@+id/cv_accept_button"
+            android:background="@color/cyan"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content">
+            <Button
+                android:text="Reject"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:id="@+id/reject_button"
+                android:background="@drawable/custom_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </androidx.cardview.widget.CardView>
     </RelativeLayout>
 
 </ScrollView>
