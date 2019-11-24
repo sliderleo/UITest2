@@ -36,14 +36,11 @@ public class UserEdit extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_edit);
-
         etName=findViewById(R.id.edit_name);
         etdob=findViewById(R.id.edit_dob);
         etContact=findViewById(R.id.edit_contact);
-
         spinnerGender=findViewById(R.id.edit_spinner_gender);
         editButton=findViewById(R.id.edit_button);
-
         etdob.setInputType(InputType.TYPE_NULL);
 
         etdob.setOnClickListener(new View.OnClickListener() {
@@ -76,12 +73,10 @@ public class UserEdit extends AppCompatActivity {
                 etName.setText(dataSnapshot.child("name").getValue().toString());
                 etdob.setText(dataSnapshot.child("dob").getValue().toString());
                 etContact.setText(dataSnapshot.child("contact").getValue().toString());
-
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                databaseError.getMessage();
             }
         });
 

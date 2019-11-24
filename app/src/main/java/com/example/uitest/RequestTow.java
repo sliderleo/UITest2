@@ -83,7 +83,7 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_tow);
-        rejectButton=findViewById(R.id.request_button);
+        rejectButton=findViewById(R.id.reject_button);
         acceptButton=findViewById(R.id.accept_button);
         tv_status=findViewById(R.id.status_text);
         onButton=findViewById(R.id.on_button);
@@ -146,7 +146,38 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                String towId=dataSnapshot.child("towDriverId").getValue().toString();
+                if(userId.equals(towId)){
+                    String locName=dataSnapshot.child("workshopName").getValue().toString();
+                    String requestId=dataSnapshot.child("id").getValue().toString();
+                    String callerName = dataSnapshot.child("userName").getValue().toString();
+                    String contact = dataSnapshot.child("userContact").getValue().toString();
+                    String callerID = dataSnapshot.child("userId").getValue().toString();
+                    String status=dataSnapshot.child("status").getValue().toString();
 
+                    String userSLong = dataSnapshot.child("userLong").getValue().toString();
+                    String userSLat = dataSnapshot.child("userLat").getValue().toString();
+                    double userLat=Double.parseDouble(userSLat);
+                    double userLong=Double.parseDouble(userSLong);
+                    LatLng userL=new LatLng(userLat,userLong);
+                    userLocation.add(userL);
+
+                    String workshopSLong = dataSnapshot.child("workshopLong").getValue().toString();
+                    String workshopSLat = dataSnapshot.child("workshopLat").getValue().toString();
+                    double workshopLat=Double.parseDouble(workshopSLat);
+                    double workshopLong=Double.parseDouble(workshopSLong);
+                    LatLng workshopL=new LatLng(workshopLat,workshopLong);
+                    workshopLocation.add(workshopL);
+
+
+                    String text = "Caller Name: "+callerName
+                            +"\nContact: "+contact+"\nDrop off Location: "+locName+"\nStatus: "+status;
+                    mReqList.add(text);
+                    callerId.add(callerID);
+                    reqId.add(requestId);
+
+                    rArrayAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override
@@ -180,6 +211,17 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
             }
         });
 
+        rListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(RequestTow.this,UserEdit.class);
+                startActivity(i);
+//                String callerCon =callerId.get(position);
+//                callerInfo.setId(callerCon);
+                return true;
+            }
+        });
+
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -187,9 +229,11 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
                 if(str == null){
                     Toast.makeText(RequestTow.this,"Please select a request!!",Toast.LENGTH_LONG).show();
                 }else{
+                    mReqList.clear();
                     requestRef=database.getReference("Request/"+str);
                     requestRef.child("status").setValue("Accepted");
                     Toast.makeText(RequestTow.this,"Request Accepted!",Toast.LENGTH_LONG).show();
+
                 }
             }
         });
@@ -201,9 +245,11 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
                 if(str == null){
                     Toast.makeText(RequestTow.this,"Please select a request!!",Toast.LENGTH_LONG).show();
                 }else{
+                    mReqList.clear();
                     requestRef=database.getReference("Request/"+str);
                     requestRef.child("status").setValue("Rejected");
                     Toast.makeText(RequestTow.this,"Request Rejected",Toast.LENGTH_LONG).show();
+
                 }
             }
         });
