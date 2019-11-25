@@ -20,7 +20,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".RequestTow"></activity>
+        <activity android:name=".UserView"></activity>
+        <activity android:name=".RequestTow" />
         <activity android:name=".UserEdit" />
         <activity android:name=".UserRegister" />
         <!--

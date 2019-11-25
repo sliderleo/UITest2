@@ -64,7 +64,7 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
     private ListView rListView;
     private LocationRequest locationRequest;
     private Marker currentUserLocationMarker;
-    private Info info;
+    private Info info,callerInfo;
     private static final int REQUEST_USER_LOCATION_CODE = 99;
     private LocationManager locationManager;
     private ArrayList<String> mReqList = new ArrayList<>();
@@ -214,10 +214,13 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
         rListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(RequestTow.this,UserEdit.class);
-                startActivity(i);
-//                String callerCon =callerId.get(position);
-//                callerInfo.setId(callerCon);
+                String callerCon =callerId.get(position);
+                Toast.makeText(RequestTow.this,callerCon,Toast.LENGTH_LONG).show();
+                ViewUser dialog = new ViewUser();
+                Bundle bundle = new Bundle();
+                bundle.putString("id",callerCon);
+                dialog.setArguments(bundle);
+                dialog.show(getSupportFragmentManager(),"View User");
                 return true;
             }
         });
@@ -466,5 +469,9 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
         myRef.setValue(current);
     }
 
+    public void openDialog(){
+        ViewUser dialog = new ViewUser();
+        dialog.show(getSupportFragmentManager(),"View User");
+    }
 
 }

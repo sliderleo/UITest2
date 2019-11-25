@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/loginbg"
+    android:layout_height="match_parent">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/r_name"
+        android:layout_below="@+id/view7"
+        android:layout_marginTop="30dp"
+        app:cardCornerRadius="25dp"
+        android:layout_marginBottom="2dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/view_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:inputType="none"
+            android:hint="Name"
+            android:drawableLeft="@drawable/name"
+            android:textAlignment="center"
+            android:background="@android:color/transparent"
+            android:padding="10dp">
+        </EditText>
+    </androidx.cardview.widget.CardView>
+
+    <View
+        android:id="@+id/view8"
+        android:layout_width="match_parent"
+        android:background="@android:color/transparent"
+        android:layout_below="@id/r_name"
+        android:layout_height="2dp"
+        android:layout_marginBottom="2dp"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/r_gender"
+        android:layout_below="@+id/view8"
+        android:layout_marginTop="10dp"
+        app:cardCornerRadius="25dp"
+        android:layout_marginBottom="2dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/view_gender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:inputType="none"
+            android:hint="Gender"
+            android:textAlignment="center"
+            android:background="@android:color/transparent"
+            android:padding="10dp">
+        </EditText>
+    </androidx.cardview.widget.CardView>
+
+    <View
+        android:id="@+id/view9"
+        android:layout_width="match_parent"
+        android:background="@android:color/transparent"
+        android:layout_below="@id/r_gender"
+        android:layout_height="2dp"
+        android:layout_marginBottom="2dp"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/r_dob"
+        android:layout_below="@+id/view9"
+        android:layout_marginTop="10dp"
+        app:cardCornerRadius="25dp"
+        android:layout_marginBottom="2dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/view_dob"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:hint="Date"
+            android:inputType="none"
+            android:drawableLeft="@drawable/dob"
+            android:textAlignment="center"
+            android:background="@android:color/transparent"
+            android:padding="10dp">
+        </EditText>
+
+    </androidx.cardview.widget.CardView>
+
+    <View
+        android:id="@+id/view10"
+        android:layout_width="match_parent"
+        android:background="@android:color/transparent"
+        android:layout_below="@id/r_dob"
+        android:layout_height="2dp"
+        android:layout_marginBottom="2dp"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/r_contact"
+        android:layout_below="@+id/view10"
+        android:layout_marginTop="10dp"
+        app:cardCornerRadius="25dp"
+        android:layout_marginBottom="2dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/view_contact"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:hint="Contact"
+            android:drawableLeft="@drawable/phone_black"
+            android:inputType="none"
+            android:textAlignment="center"
+            android:background="@android:color/transparent"
+            android:padding="10dp">
+        </EditText>
+
+    </androidx.cardview.widget.CardView>
+
+
+</RelativeLayout>
