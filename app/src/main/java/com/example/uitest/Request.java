@@ -11,6 +11,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,7 +66,9 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
     private static final int REQUEST_USER_LOCATION_CODE = 99;
     private double userLat, userLong, locationLat, locationLong,farePrice;
     private android.location.LocationListener locationListener;
+    private ArrayList<String> mDriver = new ArrayList<>();
     String id, towid, locationName,myName;
+    ListView driverList;
     double price;
     LocationManager locationManager;
     List<String> towList,towIdList;
@@ -77,13 +80,16 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         car_spinner1 = findViewById(R.id.car_spinner);
-        tow_spinner = findViewById(R.id.tow_spinner);
         tv_userlocation = findViewById(R.id.user_current_location);
         tv_selected_workshop = findViewById(R.id.selected_workshop);
         tv_fare=findViewById(R.id.fare_price);
         requestBtn = findViewById(R.id.request_button);
+        driverList=findViewById(R.id.driver_list);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         id = user.getUid();
+
+        final ArrayAdapter<String> rArrayAdapter=new ArrayAdapter<>(getApplicationContext(),R.layout.textview,mDriver);
+        driverList.setAdapter(rArrayAdapter);
 
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference("Workshop");
@@ -157,13 +163,25 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
             }
         });
 
+        driverList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                String driverId =towIdList.get(position);
+                ViewUser dialog = new ViewUser();
+                Bundle bundle = new Bundle();
+                bundle.putString("id",driverId);
+                dialog.setArguments(bundle);
+                dialog.show(getSupportFragmentManager(),"View User");
+                return true;
+            }
+        });
+
         towRef = database.getReference("Status");
         Query towQuery = towRef;
 
         towQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                towList = new ArrayList<>();
                 towIdList=new ArrayList<>();
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                     String dutyString = dataSnapshot1.child("duty").getValue().toString();
@@ -172,19 +190,12 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
                     if (dutyString.equals("on")) {
                         String driver = dataSnapshot1.child("name").getValue().toString();
                         String towData=dataSnapshot1.child("userId").getValue().toString();
-                        towList.add(driver);
+                        mDriver.add(driver);
                         towIdList.add(towData);
                     } else if (dutyString == "off") {}
                 }
 
-                if (towList.isEmpty()) {
-                    String msg = "No Tow Driver Available";
-                    towList.add(msg);
-                }
-
-                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(Request.this, android.R.layout.simple_spinner_item, towList);
-                arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                tow_spinner.setAdapter(arrayAdapter);
+                rArrayAdapter.notifyDataSetChanged();
             }
 
             @Override

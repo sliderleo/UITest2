@@ -215,7 +215,6 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 String callerCon =callerId.get(position);
-                Toast.makeText(RequestTow.this,callerCon,Toast.LENGTH_LONG).show();
                 ViewUser dialog = new ViewUser();
                 Bundle bundle = new Bundle();
                 bundle.putString("id",callerCon);

@@ -2,11 +2,14 @@ package com.example.uitest;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,9 +39,10 @@ public class ViewUser extends AppCompatDialogFragment {
         etDate=view.findViewById(R.id.view_dob);
         etName.setText(viewId);
 
+
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         myRef= database.getReference().child("Users").child(viewId);
-
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
