@@ -121,9 +121,8 @@ public class Vehicle extends AppCompatActivity{
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             myRef.child(str).removeValue();
                             Toast.makeText(Vehicle.this,"Vehicle Deleted",Toast.LENGTH_LONG).show();
-                            Intent intent = getIntent();
                             finish();
-                            startActivity(intent);
+                            startActivity(getIntent());
                         }
 
                         @Override

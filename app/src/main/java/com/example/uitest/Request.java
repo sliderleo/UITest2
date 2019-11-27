@@ -67,7 +67,7 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
     private double userLat, userLong, locationLat, locationLong,farePrice;
     private android.location.LocationListener locationListener;
     private ArrayList<String> mDriver = new ArrayList<>();
-    String id, towid, locationName,myName;
+    String id, towid, locationName,myName,driverName;
     ListView driverList;
     double price;
     LocationManager locationManager;
@@ -176,6 +176,14 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
             }
         });
 
+        driverList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                driverName=towIdList.get(position);
+                Toast.makeText(Request.this, driverName, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         towRef = database.getReference("Status");
         Query towQuery = towRef;
 
@@ -220,20 +228,14 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
         });
 
 
-        requestBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
 
         requestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String driverName=tow_spinner.getSelectedItem().toString();
-                int spinner =tow_spinner.getSelectedItemPosition();
+
+                //int spinner =tow_spinner.getSelectedItemPosition();
                 final String car = car_spinner1.getSelectedItem().toString();
-                final String towdriver=towIdList.get(spinner);
+                //final String towdriver=towIdList.get(spinner);
 
 
                 if(locationLat==0 && locationLong==0){
@@ -248,7 +250,7 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
                         public void onCallback(String name,String contact) {
                             DatabaseReference reqRef=database.getReference().child("Request");
                             String reqId=reqRef.push().getKey();
-                            RequestInfo info = new RequestInfo(name,contact,userLat,userLong,locationLat,locationLong,locationName,id,towdriver,car,price,"Pending",reqId);
+                            RequestInfo info = new RequestInfo(name,contact,userLat,userLong,locationLat,locationLong,locationName,id,driverName,car,price,"Pending",reqId);
                             reqRef.child(reqId).setValue(info);
                         }
                     });
