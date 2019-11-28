@@ -230,9 +230,63 @@
         <androidx.cardview.widget.CardView
             android:layout_marginTop="15dp"
             android:layout_marginBottom="20dp"
-            android:id="@+id/cv_submit_button"
+            android:id="@+id/cv_select_button"
             app:cardCornerRadius="25dp"
             android:layout_below="@+id/view11"
+            android:background="@color/cyan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:text="Select"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="30sp"
+                android:id="@+id/select_button"
+                android:background="@drawable/custom_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </androidx.cardview.widget.CardView>
+
+
+        <View
+            android:id="@+id/view12"
+            android:layout_width="match_parent"
+            android:background="@android:color/transparent"
+            android:layout_below="@id/cv_select_button"
+            android:layout_height="2dp"
+            android:layout_marginBottom="2dp"/>
+
+        <androidx.cardview.widget.CardView
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="20dp"
+            android:id="@+id/cv_image_view"
+            app:cardCornerRadius="25dp"
+            android:layout_below="@+id/view12"
+            android:background="@color/cyan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+         <ImageView
+             android:id="@+id/image_view"
+             android:layout_marginLeft="60dp"
+             android:layout_width="250dp"
+             android:layout_height="250dp"/>
+        </androidx.cardview.widget.CardView>
+
+        <View
+            android:id="@+id/view13"
+            android:layout_width="match_parent"
+            android:background="@android:color/transparent"
+            android:layout_below="@id/cv_image_view"
+            android:layout_height="2dp"
+            android:layout_marginBottom="2dp"/>
+
+        <androidx.cardview.widget.CardView
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="20dp"
+            android:id="@+id/cv_submit_button"
+            app:cardCornerRadius="25dp"
+            android:layout_below="@+id/view13"
             android:background="@color/cyan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">

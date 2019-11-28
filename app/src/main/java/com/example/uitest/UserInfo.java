@@ -2,12 +2,12 @@ package com.example.uitest;
 
 public class UserInfo {
     private String name,gender,type,dob;
-    private int contact;
+    private String contact;
 
     public UserInfo(){
 
     }
-    public UserInfo(String name,String gender,String type,String dob,int contact){
+    public UserInfo(String name,String gender,String type,String dob,String contact){
         this.name=name;
         this.gender=gender;
         this.type=type;
@@ -26,7 +26,7 @@ public class UserInfo {
     public String getDob(){
         return this.dob;
     }
-    public int getContact(){
+    public String getContact(){
         return this.contact;
 
     }
