@@ -35,7 +35,7 @@ import java.util.Calendar;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserRegister extends AppCompatActivity {
-    private EditText etDob,etName,etContact;
+    private EditText etDob,etName,etContact,etDesc;
     private DatePickerDialog picker;
     private Spinner sGender,sUser;
     private Button submit_button,select_button;
@@ -46,11 +46,12 @@ public class UserRegister extends AppCompatActivity {
     FirebaseStorage storage;
     FirebaseUser userS;
     public Uri imguri;
-    String name,spinnerGender,spinnerUser,contactString,dob,id;
+    String name,spinnerGender,spinnerUser,contactString,dob,id,desc;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_register);
+        etDesc=findViewById(R.id.et_desc);
         etName=findViewById(R.id.et_name);
         etContact=findViewById(R.id.et_contact);
         imgv=findViewById(R.id.image_view);
@@ -102,7 +103,7 @@ public class UserRegister extends AppCompatActivity {
                 int contactNum=0;
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 id = user.getUid();
-
+                desc=etDesc.getText().toString();
                 spinnerGender = sGender.getSelectedItem().toString();
                 spinnerUser=sUser.getSelectedItem().toString();
                 name=etName.getText().toString();
@@ -111,8 +112,8 @@ public class UserRegister extends AppCompatActivity {
 
                 if(contactString.isEmpty()){
                     Toast.makeText(UserRegister.this,"Contact number is empty!",Toast.LENGTH_SHORT).show();
-                }else if(!contactString.isEmpty()){
-                    contactNum=Integer.parseInt(contactString);
+                }else if(desc.isEmpty()){
+                    Toast.makeText(UserRegister.this,"The description is empty!",Toast.LENGTH_SHORT).show();
                 }
 
 
@@ -122,7 +123,7 @@ public class UserRegister extends AppCompatActivity {
                     Toast.makeText(UserRegister.this,"DOB is empty!",Toast.LENGTH_SHORT).show();
                 }else if (!(name.isEmpty() && dob.isEmpty())){
                     FileUploader();
-                    UserInfo userInfo=new UserInfo(name,spinnerGender,spinnerUser,dob,contactString);
+                    UserInfo userInfo=new UserInfo(name,spinnerGender,spinnerUser,dob,contactString,desc);
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                     DatabaseReference myRef = database.getReference().child("Users").child(id);
                     myRef.setValue(userInfo);

@@ -46,7 +46,7 @@
                 android:layout_height="160dp">
 
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:layout_marginLeft="110dp"
+                   android:layout_centerHorizontal="true"
                     android:id="@+id/user_profile"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
@@ -177,7 +177,26 @@
                    android:layout_marginLeft="12dp"
                    android:text="@string/contact"/>
 
+           </androidx.cardview.widget.CardView>
 
+           <androidx.cardview.widget.CardView
+               android:id="@+id/cv_desc"
+               android:layout_below="@+id/cv_contact"
+               android:layout_marginTop="15dp"
+               app:cardCornerRadius="15dp"
+               app:cardBackgroundColor="@color/colorGrey"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+
+               <TextView
+                   android:id="@+id/desc_tv"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_margin="15dp"
+                   android:textSize="20sp"
+                   android:textColor="@color/white"
+                   android:layout_marginLeft="12dp"
+                   android:text="Desc:"/>
 
            </androidx.cardview.widget.CardView>
        </RelativeLayout>

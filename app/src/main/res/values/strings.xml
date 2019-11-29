@@ -5,7 +5,7 @@
     <string name="car_brand_text">Car Brand</string>
     <string name="car_color_text">Car Color</string>
 
-
+    <string name="register_text_3"> A little description about you (Company Name, Insurance Coverage for Tow Car Driver) </string>
     <string name="latitude"> Latitude: </string>
     <string name="longitude"> Longitude: </string>
 

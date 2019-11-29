@@ -24,7 +24,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class User extends AppCompatActivity {
     private ImageButton backBtn,editBtn;
-    private TextView tv_name,tv_gender,tv_dob,tv_contact,tv_email,tv_type;
+    private TextView tv_name,tv_gender,tv_dob,tv_contact,tv_email,tv_type,tv_desc;
     CircleImageView circleImageView;
     DatabaseReference myRef,mDatabaseRef;
     String id;
@@ -35,7 +35,7 @@ public class User extends AppCompatActivity {
         backBtn= findViewById(R.id.backArrow);
         editBtn= findViewById(R.id.editButton);
         circleImageView=findViewById(R.id.user_profile);
-
+        tv_desc=findViewById(R.id.desc_tv);
         tv_type=findViewById(R.id.user_type);
         tv_name=findViewById(R.id.name_tv);
         tv_gender=findViewById(R.id.gender_tv);
@@ -92,6 +92,7 @@ public class User extends AppCompatActivity {
                 String dob = dataSnapshot.child("dob").getValue().toString();
                 String contact=dataSnapshot.child("contact").getValue().toString();
                 String type=dataSnapshot.child("type").getValue().toString();
+                String desc = dataSnapshot.child("desc").getValue().toString();
                 String email = user.getEmail();
                 tv_name.setText("Name: "+name);
                 tv_gender.setText("Gender: "+gender);
@@ -99,6 +100,7 @@ public class User extends AppCompatActivity {
                 tv_contact.setText("Contact: "+contact);
                 tv_email.setText("Email: "+email);
                 tv_type.setText(type);
+                tv_desc.setText("Desc: "+desc);
             }
 
             @Override

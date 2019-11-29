@@ -1,6 +1,7 @@
 package com.example.uitest;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -62,12 +63,12 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
     private Location lastLocation;
     private LatLng destinationLatLng;
     private Marker currentUserLocationMarker, markerWorkshop;
-    private Button requestBtn;
+    private Button requestBtn,requestListBtn;
     private static final int REQUEST_USER_LOCATION_CODE = 99;
     private double userLat, userLong, locationLat, locationLong,farePrice;
     private android.location.LocationListener locationListener;
     private ArrayList<String> mDriver = new ArrayList<>();
-    String id, towid, locationName,myName,driverName;
+    String id, towid, locationName,myName,driverName,Dname;
     ListView driverList;
     double price;
     LocationManager locationManager;
@@ -85,6 +86,7 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
         tv_fare=findViewById(R.id.fare_price);
         requestBtn = findViewById(R.id.request_button);
         driverList=findViewById(R.id.driver_list);
+        requestListBtn=findViewById(R.id.request_list_button);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         id = user.getUid();
 
@@ -105,6 +107,13 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
         mapFragment.getMapAsync(this);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
+        requestListBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Request.this,ViewRequestList.class);
+                startActivity(i);
+            }
+        });
 
         myRef.addChildEventListener(new ChildEventListener() {
             @Override
@@ -180,7 +189,8 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 driverName=towIdList.get(position);
-                Toast.makeText(Request.this, driverName, Toast.LENGTH_SHORT).show();
+                Dname = mDriver.get(position);
+                Toast.makeText(Request.this, Dname +"Selected!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -250,7 +260,7 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
                         public void onCallback(String name,String contact) {
                             DatabaseReference reqRef=database.getReference().child("Request");
                             String reqId=reqRef.push().getKey();
-                            RequestInfo info = new RequestInfo(name,contact,userLat,userLong,locationLat,locationLong,locationName,id,driverName,car,price,"Pending",reqId);
+                            RequestInfo info = new RequestInfo(name,contact,userLat,userLong,locationLat,locationLong,locationName,id,driverName,Dname,car,price,"Pending",reqId);
                             reqRef.child(reqId).setValue(info);
                         }
                     });
