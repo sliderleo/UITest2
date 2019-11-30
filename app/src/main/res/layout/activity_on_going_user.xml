@@ -74,7 +74,7 @@
             android:layout_below="@+id/distance_tv"
             android:layout_toRightOf="@+id/imgview_circle"
             android:background="@drawable/custom_button_green"
-            android:text="action"
+            android:text="Rate"
             android:layout_width="210dp"
             android:layout_height="wrap_content"/>
 

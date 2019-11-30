@@ -3,6 +3,8 @@ package com.example.uitest;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
@@ -29,26 +31,42 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class OnGoingUser extends FragmentActivity implements OnMapReadyCallback , GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     TextView tv_name,tv_distance;
+    CircleImageView circleImg;
     private GoogleMap mMap;
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
     LocationManager locationManager;
-    private Location lastLocation;
+    private Location lastLocation,userLocation,towDriverLocation;
     private LatLng destinationLatLng;
-    private Marker currentUserLocationMarker, markerWorkshop;
+    private Marker currentUserLocationMarker, markerWorkshop,towDriverMarker;
     private static final int REQUEST_USER_LOCATION_CODE = 99;
     private double userLat, userLong, locationLat, locationLong;
     private android.location.LocationListener locationListener;
+    DatabaseReference mDatabaseRef,myRef,towDLocRef,requestRef;
+    private final String CHANNEL_ID = "personal_noti";
+    private final int NOTIFICATION_ID = 001;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_on_going_user);
-
+        final String towId=getIntent().getStringExtra("towId");
+        final String reqId = getIntent().getStringExtra("requestId");
+        circleImg=findViewById(R.id.imgview_circle);
         tv_name=findViewById(R.id.name_tv);
         tv_distance=findViewById(R.id.distance_tv);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -59,6 +77,61 @@ public class OnGoingUser extends FragmentActivity implements OnMapReadyCallback 
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        mDatabaseRef= database.getReference().child("Upload");
+        myRef= database.getReference().child("Users").child(towId);
+        towDLocRef=database.getReference().child("CurrentLocation").child(towId);
+        requestRef=database.getReference().child("Request").child(reqId);
+        userLocation = new Location("");
+        towDriverLocation = new Location("");
+
+
+
+
+        mDatabaseRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                String name =dataSnapshot.child("mName").getValue().toString();
+                if(name.equals(towId)){
+                    String links = dataSnapshot.child("mImageUrl").getValue().toString();
+                    Picasso.get().load(links).into(circleImg);
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String name = dataSnapshot.child("name").getValue().toString();
+                tv_name.setText("Name: "+name);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 
@@ -79,6 +152,71 @@ public class OnGoingUser extends FragmentActivity implements OnMapReadyCallback 
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
+
+        towDLocRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(towDriverMarker !=null){
+                    towDriverMarker.remove();
+                }
+
+                String towLat = dataSnapshot.child("userlat").getValue().toString();
+                String towLong = dataSnapshot.child("userlong").getValue().toString();
+                double latitude = Double.parseDouble(towLat);
+                double longitude = Double.parseDouble(towLong);
+                LatLng towDLocation = new LatLng(latitude,longitude);
+                towDriverLocation.setLatitude(latitude);
+                towDriverLocation.setLongitude(longitude);
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(towDLocation);
+                markerOptions.title("Tow Driver Location");
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                towDriverMarker=mMap.addMarker(markerOptions);
+
+                DecimalFormat d = new DecimalFormat("0.00");
+                double distance = (userLocation.distanceTo(towDriverLocation))/1000;
+                tv_distance.setText("Distance: "+d.format(distance)+"km");
+
+                if(distance<0.5){
+                    NotificationCompat.Builder builder= new NotificationCompat.Builder(OnGoingUser.this,CHANNEL_ID);
+                    builder.setSmallIcon(R.drawable.person_black);
+                    builder.setContentTitle("Tow driver is near you ...");
+                    builder.setContentText("Tow driver is reaching soon");
+                    builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+                    NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(OnGoingUser.this);
+                    notificationManagerCompat.notify(NOTIFICATION_ID,builder.build());
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        requestRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String workLatS= dataSnapshot.child("workshopLat").getValue().toString();
+                String workLongS = dataSnapshot.child("workshopLong").getValue().toString();
+                double workLat = Double.parseDouble(workLatS);
+                double workLong = Double.parseDouble(workLongS);
+                LatLng workloc = new LatLng(workLat,workLong);
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(workloc);
+                markerOptions.title("Destination");
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                markerWorkshop=mMap.addMarker(markerOptions);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     @Override
@@ -113,8 +251,10 @@ public class OnGoingUser extends FragmentActivity implements OnMapReadyCallback 
         userLong = location.getLongitude();
         final String latitude = Double.toString(location.getLatitude());
         final String longitude = Double.toString(location.getLongitude());
-        Toast.makeText(this, latitude+"++"+longitude, Toast.LENGTH_SHORT).show();
-
+        double userlat=Double.parseDouble(latitude);
+        double userlong=Double.parseDouble(longitude);
+        userLocation.setLatitude(userlat);
+        userLocation.setLongitude(userlong);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomBy(12));
 

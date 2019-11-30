@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -37,6 +38,7 @@ public class ViewRequestList extends AppCompatActivity {
     FirebaseUser user;
     FirebaseDatabase database;
     DatabaseReference myRef,towDRef;
+    String requestIdString,towIdString;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,13 +60,16 @@ public class ViewRequestList extends AppCompatActivity {
             public void onClick(View v) {
                 final String str = info.getId();
                 final String status = statusInfo.getId();
+                final String towDId = towDInfo.getId();
                 if(str == null){
                     Toast.makeText(ViewRequestList.this,"Please select a request!!",Toast.LENGTH_LONG).show();
                 }else  if(status.equals("Accepted")){
-                    Toast.makeText(ViewRequestList.this, status, Toast.LENGTH_SHORT).show();
-
+                    Intent i = new Intent(ViewRequestList.this,OnGoingUser.class);
+                    i.putExtra("requestId",str);
+                    i.putExtra("towId",towDId);
+                    startActivity(i);
                 }else{
-                    Toast.makeText(ViewRequestList.this, "Failedd", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ViewRequestList.this, "The request still pending!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -103,6 +108,8 @@ public class ViewRequestList extends AppCompatActivity {
                 String requestId=reqId.get(position);
                 String towDId = towIdList.get(position);
                 String stat = statusList.get(position);
+                requestIdString =reqId.get(position);
+                towIdString= towIdList.get(position);
                 info.setId(requestId);
                 towDInfo.setId(towDId);
                 statusInfo.setId(stat);

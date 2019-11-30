@@ -203,7 +203,6 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
                 towIdList=new ArrayList<>();
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                     String dutyString = dataSnapshot1.child("duty").getValue().toString();
-                    Toast.makeText(Request.this, dutyString, Toast.LENGTH_SHORT).show();
 
                     if (dutyString.equals("on")) {
                         String driver = dataSnapshot1.child("name").getValue().toString();
