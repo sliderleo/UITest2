@@ -149,7 +149,6 @@
             android:layout_below="@+id/view11"
             android:layout_marginTop="10dp"
             app:cardCornerRadius="25dp"
-            android:layout_marginBottom="15dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -167,7 +166,37 @@
 
         </androidx.cardview.widget.CardView>
 
+        <View
+            android:id="@+id/view12"
+            android:layout_width="match_parent"
+            android:background="@android:color/transparent"
+            android:layout_below="@id/r_desc"
+            android:layout_height="2dp"
+            android:layout_marginBottom="2dp"/>
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/r_rating"
+            android:layout_below="@+id/view12"
+            android:layout_marginTop="10dp"
+            app:cardCornerRadius="25dp"
+            android:layout_marginBottom="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/view_rating"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:drawableLeft="@drawable/star_black"
+                android:hint="None (Only available for Tow Drivers)"
+                android:inputType="none"
+                android:textAlignment="center"
+                android:background="@android:color/transparent"
+                android:padding="10dp">
+            </EditText>
+
+        </androidx.cardview.widget.CardView>
     </RelativeLayout>
 
 
