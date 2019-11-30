@@ -9,11 +9,13 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +48,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class OnGoingUser extends FragmentActivity implements OnMapReadyCallback , GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     TextView tv_name,tv_distance;
     CircleImageView circleImg;
+    private Button rateBtn;
     private GoogleMap mMap;
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
@@ -66,6 +69,7 @@ public class OnGoingUser extends FragmentActivity implements OnMapReadyCallback 
         setContentView(R.layout.activity_on_going_user);
         final String towId=getIntent().getStringExtra("towId");
         final String reqId = getIntent().getStringExtra("requestId");
+        rateBtn=findViewById(R.id.rating_button);
         circleImg=findViewById(R.id.imgview_circle);
         tv_name=findViewById(R.id.name_tv);
         tv_distance=findViewById(R.id.distance_tv);
@@ -85,7 +89,15 @@ public class OnGoingUser extends FragmentActivity implements OnMapReadyCallback 
         userLocation = new Location("");
         towDriverLocation = new Location("");
 
-
+        rateBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(OnGoingUser.this,RatingUI.class);
+                i.putExtra("towId",towId);
+                startActivity(i);
+                rateBtn.setEnabled(false);
+            }
+        });
 
 
         mDatabaseRef.addChildEventListener(new ChildEventListener() {

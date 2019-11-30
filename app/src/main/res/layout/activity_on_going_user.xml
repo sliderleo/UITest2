@@ -68,6 +68,7 @@
             android:layout_height="wrap_content"/>
 
         <Button
+            android:id="@+id/rating_button"
             android:layout_marginTop="5dp"
             android:textSize="18sp"
             android:textColor="@color/white"
