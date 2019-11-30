@@ -38,6 +38,7 @@ private ImageButton backBtn;
 private ArrayList<String> mReqList = new ArrayList<>();
 private ArrayList<String> reqId = new ArrayList<>();
 private ArrayList<String> callerId = new ArrayList<>();
+private ArrayList<String> statusList = new ArrayList<>();
 Info info;
 FirebaseUser user;
 FirebaseDatabase database;
@@ -80,7 +81,15 @@ DatabaseReference myRef,towDRef;
                     mReqList.add(text);
                     callerId.add(callerID);
                     reqId.add(requestId);
-
+                    statusList.add(status);
+                    rArrayAdapter.notifyDataSetChanged();
+                }else if(userId.equals(towId) && status.equals("Accepted")){
+                    String text = "Caller Name: "+callerName
+                            +"\nContact: "+contact+"\nDrop off Location: "+locName+"\nFare: RM"+fareL;
+                    mReqList.add(text);
+                    callerId.add(callerID);
+                    reqId.add(requestId);
+                    statusList.add(status);
                     rArrayAdapter.notifyDataSetChanged();
                 }
             }

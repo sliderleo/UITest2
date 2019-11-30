@@ -68,7 +68,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
-
+            <Button
+                android:layout_below="@+id/cancel_button"
+                android:layout_marginTop="20dp"
+                android:text="On Going"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:id="@+id/to_ongoing_button"
+                android:background="@drawable/custom_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
         </RelativeLayout>
 

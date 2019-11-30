@@ -25,14 +25,15 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class ViewRequestList extends AppCompatActivity {
-    private Button cancelButton;
+    private Button cancelButton,onGoingButton;
     private ListView rListView;
     private String userId;
     private ImageButton backBtn;
     private ArrayList<String> mReqList = new ArrayList<>();
     private ArrayList<String> reqId = new ArrayList<>();
     private ArrayList<String> towIdList = new ArrayList<>();
-    Info info;
+    private ArrayList<String> statusList = new ArrayList<>();
+    Info info,towDInfo,statusInfo;
     FirebaseUser user;
     FirebaseDatabase database;
     DatabaseReference myRef,towDRef;
@@ -44,10 +45,30 @@ public class ViewRequestList extends AppCompatActivity {
         final ArrayAdapter<String> rArrayAdapter=new ArrayAdapter<>(getApplicationContext(),R.layout.mytextview,mReqList);
         rListView.setAdapter(rArrayAdapter);
         info=new Info();
+        towDInfo=new Info();
+        statusInfo=new Info();
         user= FirebaseAuth.getInstance().getCurrentUser();
         userId=user.getUid();
         database = FirebaseDatabase.getInstance();
         myRef=database.getReference().child("Request");
+
+        onGoingButton=findViewById(R.id.to_ongoing_button);
+        onGoingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String str = info.getId();
+                final String status = statusInfo.getId();
+                if(str == null){
+                    Toast.makeText(ViewRequestList.this,"Please select a request!!",Toast.LENGTH_LONG).show();
+                }else  if(status.equals("Accepted")){
+                    Toast.makeText(ViewRequestList.this, status, Toast.LENGTH_SHORT).show();
+
+                }else{
+                    Toast.makeText(ViewRequestList.this, "Failedd", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
 
 
         backBtn= findViewById(R.id.backArrow);
@@ -79,8 +100,13 @@ public class ViewRequestList extends AppCompatActivity {
         rListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String content=reqId.get(position);
-                info.setId(content);
+                String requestId=reqId.get(position);
+                String towDId = towIdList.get(position);
+                String stat = statusList.get(position);
+                info.setId(requestId);
+                towDInfo.setId(towDId);
+                statusInfo.setId(stat);
+
             }
         });
 
@@ -119,7 +145,15 @@ public class ViewRequestList extends AppCompatActivity {
                     mReqList.add(text);
                     towIdList.add(towId);
                     reqId.add(requestId);
-
+                    statusList.add(status);
+                    rArrayAdapter.notifyDataSetChanged();
+                }else if(userId.equals(callerID) && status.equals("Accepted")){
+                    String text = "Selected Driver: "+towName
+                            +"\nDrop off Location: "+locName+"\nFare: RM"+fareL+"\nStatus: "+status;
+                    mReqList.add(text);
+                    towIdList.add(towId);
+                    reqId.add(requestId);
+                    statusList.add(status);
                     rArrayAdapter.notifyDataSetChanged();
                 }
             }
