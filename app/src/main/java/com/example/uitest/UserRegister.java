@@ -152,8 +152,10 @@ public void toLogin(){
 public void addStatus(){
     Status stat=new Status(name,id,"off");
     FirebaseDatabase databaseTow = FirebaseDatabase.getInstance();
+    DatabaseReference myRef = databaseTow.getReference().child("Rating").child(id);
     DatabaseReference towRef = databaseTow.getReference().child("Status").child(id);
     towRef.setValue(stat);
+    myRef.push().setValue(1);
 }
 
     private String getExtension(Uri uri){
