@@ -26,10 +26,11 @@ import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ViewUser extends AppCompatDialogFragment {
-    private EditText etName,etGender,etDate,etContact,etDesc;
+    private EditText etName,etGender,etDate,etContact,etDesc,etRating;
     private String viewId;
+    private int count=0,totalRating=0;
     CircleImageView imgv;
-    DatabaseReference myRef,mDatabaseRef;
+    DatabaseReference myRef,mDatabaseRef,ratingRef;
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -44,10 +45,62 @@ public class ViewUser extends AppCompatDialogFragment {
         etContact=view.findViewById(R.id.view_contact);
         etDate=view.findViewById(R.id.view_dob);
         etDesc=view.findViewById(R.id.view_desc);
+        etRating=view.findViewById(R.id.view_rating);
+
+        etName.setEnabled(false);
+        etName.setFocusable(false);
+
+        etGender.setEnabled(false);
+        etGender.setFocusable(false);
+
+        etContact.setEnabled(false);
+        etContact.setFocusable(false);
+
+        etDate.setEnabled(false);
+        etDate.setFocusable(false);
+
+        etDesc.setEnabled(false);
+        etDesc.setFocusable(false);
+
+        etRating.setEnabled(false);
+        etRating.setFocusable(false);
 
         final FirebaseDatabase mdatabase = FirebaseDatabase.getInstance();
         mDatabaseRef= mdatabase.getReference().child("Upload");
-        //etName.setText(viewId);
+        ratingRef=mdatabase.getReference().child("Rating").child(viewId);
+
+        ratingRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                String rating = dataSnapshot.getValue().toString();
+                int tRating = Integer.parseInt(rating);
+                totalRating+=tRating;
+                count+=1;
+                double average = totalRating/count;
+                String text =Double.toString(average);
+                etRating.setText(text);
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         mDatabaseRef.addChildEventListener(new ChildEventListener() {
             @Override
