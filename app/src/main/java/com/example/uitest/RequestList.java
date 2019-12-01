@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
@@ -31,7 +32,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class RequestList extends AppCompatActivity {
-private Button acceptBtn,rejectBtn;
+private Button acceptBtn,rejectBtn,onGoingButton;
 private ListView rListView;
 private String userId;
 private ImageButton backBtn;
@@ -39,7 +40,7 @@ private ArrayList<String> mReqList = new ArrayList<>();
 private ArrayList<String> reqId = new ArrayList<>();
 private ArrayList<String> callerId = new ArrayList<>();
 private ArrayList<String> statusList = new ArrayList<>();
-Info info;
+Info info,statusInfo,userInfo;
 FirebaseUser user;
 FirebaseDatabase database;
 DatabaseReference myRef,towDRef;
@@ -48,11 +49,16 @@ DatabaseReference myRef,towDRef;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_list);
+        onGoingButton=findViewById(R.id.ongoing_button);
+        acceptBtn=findViewById(R.id.accept_button);
+        rejectBtn=findViewById(R.id.reject_button);
         backBtn= (ImageButton) findViewById(R.id.backArrow);
         rListView=findViewById(R.id.request_listView);
         final ArrayAdapter<String> rArrayAdapter=new ArrayAdapter<>(getApplicationContext(),R.layout.mytextview,mReqList);
         rListView.setAdapter(rArrayAdapter);
         info=new Info();
+        statusInfo=new Info();
+        userInfo=new Info();
         user= FirebaseAuth.getInstance().getCurrentUser();
         userId=user.getUid();
         database = FirebaseDatabase.getInstance();
@@ -76,8 +82,8 @@ DatabaseReference myRef,towDRef;
                 String fareL=d.format(fare);
 
                 if(userId.equals(towId) && status.equals("Pending")){
-                   String text = "Caller Name: "+callerName
-                            +"\nContact: "+contact+"\nDrop off Location: "+locName+"\nFare: RM"+fareL;
+                    String text = "Caller Name: "+callerName
+                            +"\nContact: "+contact+"\nDrop off Location: "+locName+"\nFare: RM"+fareL+"\nStatus: "+status;
                     mReqList.add(text);
                     callerId.add(callerID);
                     reqId.add(requestId);
@@ -85,7 +91,7 @@ DatabaseReference myRef,towDRef;
                     rArrayAdapter.notifyDataSetChanged();
                 }else if(userId.equals(towId) && status.equals("Accepted")){
                     String text = "Caller Name: "+callerName
-                            +"\nContact: "+contact+"\nDrop off Location: "+locName+"\nFare: RM"+fareL;
+                            +"\nContact: "+contact+"\nDrop off Location: "+locName+"\nFare: RM"+fareL+"\nStatus: "+status;
                     mReqList.add(text);
                     callerId.add(callerID);
                     reqId.add(requestId);
@@ -119,7 +125,11 @@ DatabaseReference myRef,towDRef;
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String content=reqId.get(position);
+                String status = statusList.get(position);
+                String user=callerId.get(position);
                 info.setId(content);
+                statusInfo.setId(status);
+                userInfo.setId(user);
             }
         });
 
@@ -136,8 +146,25 @@ DatabaseReference myRef,towDRef;
             }
         });
 
-        acceptBtn=findViewById(R.id.accept_button);
-        rejectBtn=findViewById(R.id.reject_button);
+        onGoingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String requestId=info.getId();
+                final String userId=userInfo.getId();
+                final String status=statusInfo.getId();
+
+                if(requestId == null){
+                    Toast.makeText(RequestList.this,"Please select a request!!",Toast.LENGTH_LONG).show();
+                }else  if(status.equals("Accepted")){
+                    Intent i = new Intent(RequestList.this,OnGoingTow.class);
+                    i.putExtra("requestId",requestId);
+                    i.putExtra("callerId",userId);
+                    startActivity(i);
+                }else{
+                    Toast.makeText(RequestList.this, "The request is still pending!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
 
         acceptBtn.setOnClickListener(new View.OnClickListener() {

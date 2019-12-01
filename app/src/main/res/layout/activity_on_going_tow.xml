@@ -82,10 +82,11 @@
 
 
         <Button
-            android:id="@+id/rating_button"
+            android:id="@+id/end_button"
             android:layout_marginTop="3dp"
             android:textSize="18sp"
             android:textColor="@color/white"
+            android:textStyle="bold"
             android:layout_below="@+id/fare_text"
             android:layout_toRightOf="@+id/imgview_circle"
             android:background="@drawable/custom_button_red"

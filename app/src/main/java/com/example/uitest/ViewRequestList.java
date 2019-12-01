@@ -69,7 +69,7 @@ public class ViewRequestList extends AppCompatActivity {
                     i.putExtra("towId",towDId);
                     startActivity(i);
                 }else{
-                    Toast.makeText(ViewRequestList.this, "The request still pending!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ViewRequestList.this, "The request is still pending!", Toast.LENGTH_SHORT).show();
                 }
             }
         });

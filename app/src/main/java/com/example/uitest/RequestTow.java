@@ -434,9 +434,9 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
 
     public void updateLocation(double driverLat,double driverLong){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference().child("CurrentLocation").child(userId);
+        DatabaseReference locRef = database.getReference().child("CurrentLocation").child(userId);
         LocationUpdate current = new LocationUpdate(driverLat,driverLong);
-        myRef.setValue(current);
+        locRef.setValue(current);
     }
 
     public void openDialog(){

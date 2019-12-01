@@ -47,7 +47,7 @@ import java.text.DecimalFormat;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class OnGoingUser extends FragmentActivity implements OnMapReadyCallback , GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class OnGoingUser extends FragmentActivity implements OnMapReadyCallback ,GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     TextView tv_name,tv_distance,tv_fare;
     CircleImageView circleImg;
     private Button rateBtn;
@@ -102,7 +102,7 @@ public class OnGoingUser extends FragmentActivity implements OnMapReadyCallback 
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        requestRef.child("status").setValue("Canceled");
+                        requestRef.child("status").setValue("Cancelled");
                         Intent intent = new Intent(OnGoingUser.this,MainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
@@ -116,7 +116,7 @@ public class OnGoingUser extends FragmentActivity implements OnMapReadyCallback 
                 });
                 AlertDialog alert = builder.create();
                 alert.show();
-                requestRef.child("status").setValue("Canceled");
+
             }
         });
 

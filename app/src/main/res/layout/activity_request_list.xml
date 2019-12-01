@@ -58,7 +58,7 @@
 
             <Button
                 android:layout_below="@+id/request_listView"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="15dp"
                 android:text="Accept"
                 android:textColor="@color/white"
                 android:textStyle="bold"
@@ -77,6 +77,18 @@
                 android:textSize="20sp"
                 android:id="@+id/reject_button"
                 android:background="@drawable/custom_button_red"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:layout_below="@+id/reject_button"
+                android:text="On Going"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:id="@+id/ongoing_button"
+                android:background="@drawable/custom_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
