@@ -26,7 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Calendar;
 
 public class Register extends AppCompatActivity {
-    private EditText etPassword,etEmail;
+    private EditText etPassword,etEmail,etPassword2;
 
     private Button submitBtn;
     private FirebaseAuth firebaseAuth;
@@ -43,6 +43,7 @@ public class Register extends AppCompatActivity {
         //editText
         etPassword=findViewById(R.id.et_password);
         etEmail=findViewById(R.id.et_email);
+        etPassword2=findViewById(R.id.et_password2);
 
 
         //button
@@ -51,16 +52,20 @@ public class Register extends AppCompatActivity {
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String password,email;
-
+                final String password,email,password2;
+                password2 = etPassword2.getText().toString();
                 password = etPassword.getText().toString();
                 email=etEmail.getText().toString();
 
-                if(email.isEmpty() && password.isEmpty()){
+                if(email.isEmpty() && password.isEmpty() && password2.isEmpty()){
                     Toast.makeText(Register.this, "The field is empty",Toast.LENGTH_SHORT).show();
                 }else if(email.isEmpty()){
                     Toast.makeText(Register.this, "Email is empty",Toast.LENGTH_SHORT).show();
                 }else if(password.isEmpty()){
+                    Toast.makeText(Register.this, "Password is empty",Toast.LENGTH_SHORT).show();
+                }else if(password2.isEmpty()){
+                    Toast.makeText(Register.this, "Confirm Password is empty",Toast.LENGTH_SHORT).show();
+                }else if(!password.equals(password2)){
                     Toast.makeText(Register.this, "Password is empty",Toast.LENGTH_SHORT).show();
                 }else{
                     firebaseAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(Register.this, new OnCompleteListener<AuthResult>() {
