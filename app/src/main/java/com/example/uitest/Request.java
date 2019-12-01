@@ -1,6 +1,8 @@
 package com.example.uitest;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -12,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -53,8 +56,9 @@ import java.util.Date;
 import java.util.List;
 
 public class Request extends FragmentActivity implements OnMapReadyCallback , GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
-    private TextView tv_userlocation, tv_selected_workshop,tv_fare;
-    private Spinner car_spinner1, tow_spinner;
+    private TextView  tv_selected_workshop,tv_fare;
+    ImageButton backBtn,refreshBtn;
+    private Spinner car_spinner1;
     private GoogleMap mMap;
     private DatabaseReference myRef, carRef, towRef, userRef;
     private FirebaseDatabase database;
@@ -65,10 +69,11 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
     private Marker currentUserLocationMarker, markerWorkshop;
     private Button requestBtn,requestListBtn;
     private static final int REQUEST_USER_LOCATION_CODE = 99;
-    private double userLat, userLong, locationLat, locationLong,farePrice;
+    private double userLat, userLong, locationLat, locationLong;
     private android.location.LocationListener locationListener;
     private ArrayList<String> mDriver = new ArrayList<>();
-    String id, towid, locationName,myName,driverName,Dname;
+    String id, towid, locationName,myName,Dname;
+    String driverName=null;
     ListView driverList;
     double price;
     LocationManager locationManager;
@@ -81,12 +86,13 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         car_spinner1 = findViewById(R.id.car_spinner);
-        tv_userlocation = findViewById(R.id.user_current_location);
         tv_selected_workshop = findViewById(R.id.selected_workshop);
         tv_fare=findViewById(R.id.fare_price);
         requestBtn = findViewById(R.id.request_button);
         driverList=findViewById(R.id.driver_list);
         requestListBtn=findViewById(R.id.request_list_button);
+        backBtn=findViewById(R.id.back_button);
+        refreshBtn=findViewById(R.id.refresh_button);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         id = user.getUid();
 
@@ -112,6 +118,21 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
             public void onClick(View v) {
                 Intent i = new Intent(Request.this,ViewRequestList.class);
                 startActivity(i);
+            }
+        });
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        refreshBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                startActivity(getIntent());
             }
         });
 
@@ -190,7 +211,7 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 driverName=towIdList.get(position);
                 Dname = mDriver.get(position);
-                Toast.makeText(Request.this, Dname +"Selected!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Request.this, Dname +" Selected!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -241,15 +262,13 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
         requestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //int spinner =tow_spinner.getSelectedItemPosition();
                 final String car = car_spinner1.getSelectedItem().toString();
                 //final String towdriver=towIdList.get(spinner);
 
 
                 if(locationLat==0 && locationLong==0){
                     Toast.makeText(Request.this,"Please select a workshop!" , Toast.LENGTH_SHORT).show();
-                }else if(driverName == "No Tow Driver Available"){
+                }else if(mDriver.isEmpty() && towIdList.isEmpty()){
                     Toast.makeText(Request.this,"There is no tow car driver around, please try again later!" , Toast.LENGTH_SHORT).show();
                 }else if (car == "No Vehicle Registered"){
                     Toast.makeText(Request.this,"Please add your vehicle at the Vehicle page!" , Toast.LENGTH_SHORT).show();
@@ -257,24 +276,38 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
                     readData(new MyCallback() {
                         @Override
                         public void onCallback(String name,String contact) {
-                            DatabaseReference reqRef=database.getReference().child("Request");
-                            String reqId=reqRef.push().getKey();
-                            RequestInfo info = new RequestInfo(name,contact,userLat,userLong,locationLat,locationLong,locationName,id,driverName,Dname,car,price,"Pending",reqId);
-                            reqRef.child(reqId).setValue(info);
+                            final String nameS = name;
+                            final String contactS=contact;
+                            AlertDialog.Builder builder = new AlertDialog.Builder(Request.this);
+                            builder.setTitle("Requesting for tow ..");
+                            builder.setMessage("Note: We only accept COD only. If you want to use your insurance coverage, please mention to the Tow Driver when meet and provide the require information for the claim.\n Proceed if you agree.");
+                            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    DatabaseReference reqRef=database.getReference().child("Request");
+                                    String reqId=reqRef.push().getKey();
+                                    RequestInfo info = new RequestInfo(nameS,contactS,userLat,userLong,locationLat,locationLong,locationName,id,driverName,Dname,car,price,"Pending",reqId);
+                                    reqRef.child(reqId).setValue(info);
+                                    Toast.makeText(Request.this,"Request Successfully" , Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+                            AlertDialog alert = builder.create();
+                            alert.show();
+
+
                         }
                     });
 
                 }
 
-
-                //String test = String.valueOf(price);
-                Toast.makeText(Request.this,"Request Successfully" , Toast.LENGTH_SHORT).show();
-
             }
         });
-
-
-        //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1,locationListener);
 
 
 
@@ -357,7 +390,7 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
         userLong = location.getLongitude();
         final String latitude = Double.toString(location.getLatitude());
         final String longitude = Double.toString(location.getLongitude());
-        tv_userlocation.setText("Latitude:" + latitude + " Longitude:" + longitude);
+
 
 
 

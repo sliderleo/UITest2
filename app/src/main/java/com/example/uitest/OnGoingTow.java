@@ -18,7 +18,10 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,7 +60,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class OnGoingTow extends FragmentActivity implements OnMapReadyCallback ,GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private TextView tv_name,tv_fare,tv_carplate;
-    Button endButton;
+
+    RelativeLayout view;
+    Button endButton,hideButton;
     CircleImageView circleimg;
     private GoogleMap mMap;
     private GoogleApiClient googleApiClient;
@@ -68,6 +73,7 @@ public class OnGoingTow extends FragmentActivity implements OnMapReadyCallback ,
     private LatLng destinationLatLng;
     private Marker currentUserLocationMarker, markerWorkshop,towDriverMarker;
     private String userId;
+    boolean opened;
     FirebaseUser user;
     FirebaseDatabase database;
     DatabaseReference mDatabaseRef,userRef,requestRef,myRef;
@@ -79,13 +85,13 @@ public class OnGoingTow extends FragmentActivity implements OnMapReadyCallback ,
         setContentView(R.layout.activity_on_going_tow);
         final String callerid = getIntent().getStringExtra("callerId");
         final String requestId = getIntent().getStringExtra("requestId");
-
+        view=findViewById(R.id.rl_userView);
         tv_name=findViewById(R.id.name_tv);
         tv_fare=findViewById(R.id.fare_text);
         tv_carplate=findViewById(R.id.carplate_tv);
         circleimg=findViewById(R.id.imgview_circle);
         endButton=findViewById(R.id.end_button);
-
+        hideButton=findViewById(R.id.hide_button);
         user= FirebaseAuth.getInstance().getCurrentUser();
         userId=user.getUid();
         database = FirebaseDatabase.getInstance();
@@ -104,6 +110,35 @@ public class OnGoingTow extends FragmentActivity implements OnMapReadyCallback ,
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         userLocation = new Location("");
 
+
+
+        hideButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!opened){
+                    view.setVisibility(View.VISIBLE);
+                    TranslateAnimation animate = new TranslateAnimation(
+                            1-view.getWidth(),
+                            0,
+                            0,
+                            0);
+                    animate.setDuration(500);
+                    animate.setFillAfter(true);
+                    view.startAnimation(animate);
+                } else {
+                    view.setVisibility(View.INVISIBLE);
+                    TranslateAnimation animate = new TranslateAnimation(
+                            0,
+                            1-view.getWidth(),
+                            0,
+                            0);
+                    animate.setDuration(500);
+                    animate.setFillAfter(true);
+                    view.startAnimation(animate);
+                }
+                opened = !opened;
+            }
+        });
 
         mDatabaseRef.addChildEventListener(new ChildEventListener() {
             @Override
@@ -219,7 +254,7 @@ public class OnGoingTow extends FragmentActivity implements OnMapReadyCallback ,
                 String car = dataSnapshot.child("car").getValue().toString();
                 double fareD=Double.parseDouble(fare);
                 DecimalFormat d = new DecimalFormat("0.00");
-                tv_fare.setText("Fare price: RM"+d.format(fareD));
+                tv_fare.setText("Fare: RM"+d.format(fareD));
                 tv_carplate.setText("Car Plate: "+car);
 
                 MarkerOptions markerOptionsUser = new MarkerOptions();
