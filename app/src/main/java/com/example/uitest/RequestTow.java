@@ -91,9 +91,6 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
         onButton=findViewById(R.id.on_button);
         offButton=findViewById(R.id.off_button);
         info=new Info();
-        rListView=findViewById(R.id.request_list);
-        final ArrayAdapter<String> rArrayAdapter=new ArrayAdapter<>(getApplicationContext(),R.layout.mytextview,mReqList);
-        rListView.setAdapter(rArrayAdapter);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             checkUserLocationPermission();
@@ -106,114 +103,6 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
         user= FirebaseAuth.getInstance().getCurrentUser();
         userId=user.getUid();
         database = FirebaseDatabase.getInstance();
-
-        mRequest=database.getReference().child("Request");
-
-        mRequest.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                String towId=dataSnapshot.child("towDriverId").getValue().toString();
-                String locName=dataSnapshot.child("workshopName").getValue().toString();
-                String requestId=dataSnapshot.child("id").getValue().toString();
-                String callerName = dataSnapshot.child("userName").getValue().toString();
-                String contact = dataSnapshot.child("userContact").getValue().toString();
-                String callerID = dataSnapshot.child("userId").getValue().toString();
-                String status=dataSnapshot.child("status").getValue().toString();
-                String fareS = dataSnapshot.child("fare").getValue().toString();
-                DecimalFormat d = new DecimalFormat("0.00");
-                double fare = Double.parseDouble(fareS);
-                String fareL=d.format(fare);
-
-                if(userId.equals(towId) && status.equals("Accepted")){
-                    String userLatS = dataSnapshot.child("userLat").getValue().toString();
-                    String userLongS = dataSnapshot.child("userLong").getValue().toString();
-                    double userLat = Double.parseDouble(userLatS);
-                    double userLong=Double.parseDouble(userLongS);
-                    LatLng userLoc = new LatLng(userLat,userLong);
-                    userLocation.add(userLoc);
-                    String workLatS = dataSnapshot.child("workshopLat").getValue().toString();
-                    String workLongS = dataSnapshot.child("workshopLong").getValue().toString();
-                    double workLat= Double.parseDouble(workLatS);
-                    double workLong= Double.parseDouble(workLongS);
-                    LatLng workshopLoc=new LatLng(workLat,workLong);
-                    workshopLocation.add(workshopLoc);
-                    String text = "Caller Name: "+callerName
-                            +"\nContact: "+contact+"\nDrop off Location: "+locName+"\nFare: RM"+fareL;
-                    mReqList.add(text);
-                    callerId.add(callerID);
-                    reqId.add(requestId);
-
-                    rArrayAdapter.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
-
-        rListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mMap.clear();
-                String content=reqId.get(position);
-                LatLng workshoploc = workshopLocation.get(position);
-                LatLng userloc = userLocation.get(position);
-                mMap.addMarker(new MarkerOptions().position(workshoploc).title("Drop Off Location").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-                mMap.addMarker(new MarkerOptions().position(userloc).title("User Current Location").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-
-                info.setId(content);
-
-            }
-        });
-
-        rListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                String callerCon =callerId.get(position);
-                ViewUser dialog = new ViewUser();
-                Bundle bundle = new Bundle();
-                bundle.putString("id",callerCon);
-                dialog.setArguments(bundle);
-                dialog.show(getSupportFragmentManager(),"View User");
-                return true;
-            }
-        });
-
-        endButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final String str=info.getId();
-                if(str == null){
-                    Toast.makeText(RequestTow.this,"Please select a request!!",Toast.LENGTH_LONG).show();
-                }else{
-                    myRef=database.getReference("Request/"+str);
-                    myRef.child("status").setValue("Ended");
-                    Toast.makeText(RequestTow.this,"Request Ended",Toast.LENGTH_LONG).show();
-                    finish();
-                    startActivity(getIntent());
-
-                }
-            }
-        });
 
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -272,13 +161,13 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
         mWorkshop.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                String name = dataSnapshot.child("name").getValue().toString();
-//                String latitudeString = dataSnapshot.child("latitude").getValue().toString();
-//                String longitudeString = dataSnapshot.child("longitude").getValue().toString();
-//                double latitude = Double.parseDouble(latitudeString);
-//                double longitude=Double.parseDouble(longitudeString);
-//                LatLng location=new LatLng(latitude,longitude);
-//                mMap.addMarker(new MarkerOptions().position(location).title(name));
+                String name = dataSnapshot.child("name").getValue().toString();
+                String latitudeString = dataSnapshot.child("latitude").getValue().toString();
+                String longitudeString = dataSnapshot.child("longitude").getValue().toString();
+                double latitude = Double.parseDouble(latitudeString);
+                double longitude=Double.parseDouble(longitudeString);
+                LatLng location=new LatLng(latitude,longitude);
+                mMap.addMarker(new MarkerOptions().position(location).title(name));
             }
 
             @Override

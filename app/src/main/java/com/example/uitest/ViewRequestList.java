@@ -29,7 +29,7 @@ public class ViewRequestList extends AppCompatActivity {
     private Button cancelButton,onGoingButton;
     private ListView rListView;
     private String userId;
-    private ImageButton backBtn;
+    private ImageButton backBtn,refreshBtn;
     private ArrayList<String> mReqList = new ArrayList<>();
     private ArrayList<String> reqId = new ArrayList<>();
     private ArrayList<String> towIdList = new ArrayList<>();
@@ -81,6 +81,15 @@ public class ViewRequestList extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+
+        refreshBtn=findViewById(R.id.refreshButton);
+        refreshBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                startActivity(getIntent());
             }
         });
 

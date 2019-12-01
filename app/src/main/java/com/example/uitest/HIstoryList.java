@@ -5,7 +5,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 public class HIstoryList extends AppCompatActivity {
     private ListView rListView;
     private ArrayList<String> mReqList = new ArrayList<>();
+    ImageButton backBtn;
     String  userId;
     FirebaseUser user;
     FirebaseDatabase database;
@@ -34,10 +37,18 @@ public class HIstoryList extends AppCompatActivity {
         user= FirebaseAuth.getInstance().getCurrentUser();
         userId=user.getUid();
         rListView=findViewById(R.id.history_listView);
+        backBtn=findViewById(R.id.backArrow);
         final ArrayAdapter<String> rArrayAdapter=new ArrayAdapter<>(getApplicationContext(),R.layout.mytextview,mReqList);
         rListView.setAdapter(rArrayAdapter);
         database = FirebaseDatabase.getInstance();
         myRef=database.getReference().child("Request");
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         myRef.addChildEventListener(new ChildEventListener() {
             @Override

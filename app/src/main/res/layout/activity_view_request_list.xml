@@ -38,6 +38,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
+            <ImageButton
+                android:id="@+id/refreshButton"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_alignParentRight="true"
+                android:background="@null"
+                android:src="@drawable/refresh_white"
+                />
+
         </RelativeLayout>
 
         <RelativeLayout

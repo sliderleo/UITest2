@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
+import android.os.strictmode.WebViewMethodCalledOnWrongThreadViolation;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -35,7 +36,7 @@ public class RequestList extends AppCompatActivity {
 private Button acceptBtn,rejectBtn,onGoingButton;
 private ListView rListView;
 private String userId;
-private ImageButton backBtn;
+private ImageButton backBtn,refreshBtn;
 private ArrayList<String> mReqList = new ArrayList<>();
 private ArrayList<String> reqId = new ArrayList<>();
 private ArrayList<String> callerId = new ArrayList<>();
@@ -53,6 +54,7 @@ DatabaseReference myRef,towDRef;
         acceptBtn=findViewById(R.id.accept_button);
         rejectBtn=findViewById(R.id.reject_button);
         backBtn= (ImageButton) findViewById(R.id.backArrow);
+        refreshBtn=(ImageButton)findViewById(R.id.refreshbtn);
         rListView=findViewById(R.id.request_listView);
         final ArrayAdapter<String> rArrayAdapter=new ArrayAdapter<>(getApplicationContext(),R.layout.mytextview,mReqList);
         rListView.setAdapter(rArrayAdapter);
@@ -218,6 +220,14 @@ DatabaseReference myRef,towDRef;
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+
+        refreshBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                startActivity(getIntent());
             }
         });
     }
