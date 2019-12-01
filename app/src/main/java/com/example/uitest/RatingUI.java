@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -42,7 +43,9 @@ public class RatingUI extends AppCompatActivity {
                 DatabaseReference myRef = database.getReference().child("Rating");
                 myRef.child(towId).push().setValue(rate);
                 Toast.makeText(RatingUI.this, "Rated!", Toast.LENGTH_SHORT).show();
-                finish();
+                Intent intent = new Intent(RatingUI.this,MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
             }
         });
 

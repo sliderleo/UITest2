@@ -60,22 +60,36 @@
             android:textSize="20sp"
             android:textColor="@color/white"
             android:textStyle="bold"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="3dp"
             android:layout_marginLeft="10dp"
             android:layout_below="@+id/name_tv"
             android:layout_toRightOf="@+id/imgview_circle"
             android:layout_width="210dp"
             android:layout_height="wrap_content"/>
 
-        <Button
-            android:id="@+id/rating_button"
-            android:layout_marginTop="5dp"
-            android:textSize="18sp"
+        <TextView
+            android:id="@+id/fare_text"
+            android:text="Fare: "
+            android:textSize="20sp"
             android:textColor="@color/white"
+            android:textStyle="bold"
+            android:layout_marginTop="3dp"
+            android:layout_marginLeft="10dp"
             android:layout_below="@+id/distance_tv"
             android:layout_toRightOf="@+id/imgview_circle"
-            android:background="@drawable/custom_button_green"
-            android:text="Rate"
+            android:layout_width="210dp"
+            android:layout_height="wrap_content"/>
+
+
+        <Button
+            android:id="@+id/rating_button"
+            android:layout_marginTop="3dp"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:layout_below="@+id/fare_text"
+            android:layout_toRightOf="@+id/imgview_circle"
+            android:background="@drawable/custom_button_red"
+            android:text="Cancel"
             android:layout_width="210dp"
             android:layout_height="wrap_content"/>
 

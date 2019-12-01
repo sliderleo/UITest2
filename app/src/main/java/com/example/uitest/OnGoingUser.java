@@ -9,6 +9,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -46,7 +48,7 @@ import java.text.DecimalFormat;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class OnGoingUser extends FragmentActivity implements OnMapReadyCallback , GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
-    TextView tv_name,tv_distance;
+    TextView tv_name,tv_distance,tv_fare;
     CircleImageView circleImg;
     private Button rateBtn;
     private GoogleMap mMap;
@@ -62,15 +64,17 @@ public class OnGoingUser extends FragmentActivity implements OnMapReadyCallback 
     DatabaseReference mDatabaseRef,myRef,towDLocRef,requestRef;
     private final String CHANNEL_ID = "personal_noti";
     private final int NOTIFICATION_ID = 001;
+    private String towId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_on_going_user);
-        final String towId=getIntent().getStringExtra("towId");
+        towId=getIntent().getStringExtra("towId");
         final String reqId = getIntent().getStringExtra("requestId");
         rateBtn=findViewById(R.id.rating_button);
         circleImg=findViewById(R.id.imgview_circle);
+        tv_fare=findViewById(R.id.fare_text);
         tv_name=findViewById(R.id.name_tv);
         tv_distance=findViewById(R.id.distance_tv);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -92,10 +96,27 @@ public class OnGoingUser extends FragmentActivity implements OnMapReadyCallback 
         rateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(OnGoingUser.this,RatingUI.class);
-                i.putExtra("towId",towId);
-                startActivity(i);
-                rateBtn.setEnabled(false);
+                AlertDialog.Builder builder = new AlertDialog.Builder(OnGoingUser.this);
+                builder.setTitle("Cancelling the request");
+                builder.setMessage("Are you sure to cancel the request?");
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        requestRef.child("status").setValue("Canceled");
+                        Intent intent = new Intent(OnGoingUser.this,MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    }
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
+                requestRef.child("status").setValue("Canceled");
             }
         });
 
@@ -213,6 +234,11 @@ public class OnGoingUser extends FragmentActivity implements OnMapReadyCallback 
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String workLatS= dataSnapshot.child("workshopLat").getValue().toString();
                 String workLongS = dataSnapshot.child("workshopLong").getValue().toString();
+                String status = dataSnapshot.child("status").getValue().toString();
+                String fare =dataSnapshot.child("fare").getValue().toString();
+                double fareD=Double.parseDouble(fare);
+                DecimalFormat d = new DecimalFormat("0.00");
+                tv_fare.setText("Fare price: RM"+d.format(fareD));
                 double workLat = Double.parseDouble(workLatS);
                 double workLong = Double.parseDouble(workLongS);
                 LatLng workloc = new LatLng(workLat,workLong);
@@ -221,6 +247,22 @@ public class OnGoingUser extends FragmentActivity implements OnMapReadyCallback 
                 markerOptions.title("Destination");
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                 markerWorkshop=mMap.addMarker(markerOptions);
+
+                if(status.equals("Ended")){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(OnGoingUser.this);
+                    builder.setMessage("The trip ended!")
+                            .setCancelable(false)
+                            .setPositiveButton("RATE", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    Intent i = new Intent(OnGoingUser.this,RatingUI.class);
+                                    i.putExtra("towId",towId);
+                                    startActivity(i);
+                                }
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+
+                }
             }
 
             @Override
