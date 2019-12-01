@@ -18,7 +18,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private CardView prof,vehicle,tow,location,logout;
+    private CardView prof,vehicle,tow,location,logout,history;
     FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     @Override
@@ -30,10 +30,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tow=findViewById(R.id.towCard);
         location=findViewById(R.id.locationCard);
         logout=findViewById(R.id.logout);
+        history=findViewById(R.id.history);
 
         prof.setOnClickListener(this);
         vehicle.setOnClickListener(this);
-
+        history.setOnClickListener(this);
         location.setOnClickListener(this);
 
         logout.setOnClickListener(new View.OnClickListener() {
@@ -114,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 case R.id.vehicleCard: i = new Intent(this, Vehicle.class);startActivity(i);break;
                 case R.id.towCard: i = new Intent(this, Request.class);startActivity(i);break;
                 case R.id.locationCard: i = new Intent(this, Workshop.class);startActivity(i);break;
+                case R.id.history: i = new Intent(this, HIstoryList.class);startActivity(i);break;
             }
         }
     }
