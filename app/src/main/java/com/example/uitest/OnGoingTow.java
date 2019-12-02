@@ -79,6 +79,9 @@ public class OnGoingTow extends FragmentActivity implements OnMapReadyCallback ,
     DatabaseReference mDatabaseRef,userRef,requestRef,myRef;
     LocationRequest locReq;
     FusedLocationProviderClient fusedLocationProviderClient;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -426,5 +429,26 @@ public class OnGoingTow extends FragmentActivity implements OnMapReadyCallback ,
         DatabaseReference locRef = database.getReference().child("CurrentLocation").child(userId);
         LocationUpdate current = new LocationUpdate(driverLat,driverLong);
         locRef.setValue(current);
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(OnGoingTow.this);
+        builder.setTitle(R.string.app_name);
+        builder.setMessage("Are you sure you to leave?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 }
