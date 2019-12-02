@@ -66,7 +66,7 @@ public class Register extends AppCompatActivity {
                 }else if(password2.isEmpty()){
                     Toast.makeText(Register.this, "Confirm Password is empty",Toast.LENGTH_SHORT).show();
                 }else if(!password.equals(password2)){
-                    Toast.makeText(Register.this, "Password is empty",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Register.this, "Password and confirm password didn't match",Toast.LENGTH_SHORT).show();
                 }else{
                     firebaseAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(Register.this, new OnCompleteListener<AuthResult>() {
                         @Override

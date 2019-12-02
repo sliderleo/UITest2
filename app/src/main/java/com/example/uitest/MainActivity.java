@@ -42,33 +42,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                final String id = user.getUid();
-                final FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference myRef= database.getReference().child("Users").child(id);
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle(R.string.app_name);
+                builder.setMessage("Do you want to logout?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                final String towid = user.getUid();
+                                final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                DatabaseReference myRef= database.getReference().child("Users").child(towid);
 
-                myRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        String userType= dataSnapshot.child("type").getValue().toString();
-                        if(userType.equals("Driver")){
-                        }else if(userType.equals("Tow Car Driver")){
-                            DatabaseReference towRef = database.getReference().child("Status").child(id);
-                            String duty = "off";
-                            towRef.child("duty").setValue(duty);
-                        }
-                    }
+                                myRef.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        String userType= dataSnapshot.child("type").getValue().toString();
+                                        if(userType.equals("Driver")){
+                                        }else if(userType.equals("Tow Car Driver")){
+                                            DatabaseReference towRef = database.getReference().child("Status").child(towid);
+                                            String duty = "off";
+                                            towRef.child("duty").setValue(duty);
+                                        }
+                                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
-                });
+                                    }
+                                });
 
-                FirebaseAuth.getInstance().signOut();
-                Intent i = new Intent(MainActivity.this, Login.class);
-                Toast.makeText(MainActivity.this, "Logged out ",Toast.LENGTH_SHORT).show();
-                startActivity(i);
+                                FirebaseAuth.getInstance().signOut();
+                                Intent i = new Intent(MainActivity.this, Login.class);
+                                Toast.makeText(MainActivity.this, "Logged out ",Toast.LENGTH_SHORT).show();
+                                finishAffinity();
+                                startActivity(i);
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+
+
+
             }
         });
 

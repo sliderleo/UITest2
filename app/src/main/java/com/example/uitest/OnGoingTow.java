@@ -436,7 +436,7 @@ public class OnGoingTow extends FragmentActivity implements OnMapReadyCallback ,
     public void onBackPressed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(OnGoingTow.this);
         builder.setTitle(R.string.app_name);
-        builder.setMessage("Are you sure you to leave?")
+        builder.setMessage("Are you sure you want to leave?")
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {

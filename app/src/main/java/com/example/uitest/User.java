@@ -24,9 +24,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class User extends AppCompatActivity {
     private ImageButton backBtn,editBtn;
-    private TextView tv_name,tv_gender,tv_dob,tv_contact,tv_email,tv_type,tv_desc;
+    private TextView tv_name,tv_gender,tv_dob,tv_contact,tv_email,tv_type,tv_desc,tv_rating;
     CircleImageView circleImageView;
-    DatabaseReference myRef,mDatabaseRef;
+    DatabaseReference myRef,mDatabaseRef,ratingRef;
+    private int count=0,totalRating=0;
     String id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +36,7 @@ public class User extends AppCompatActivity {
         backBtn= findViewById(R.id.backArrow);
         editBtn= findViewById(R.id.editButton);
         circleImageView=findViewById(R.id.user_profile);
+        tv_rating=findViewById(R.id.rating_tv);
         tv_desc=findViewById(R.id.desc_tv);
         tv_type=findViewById(R.id.user_type);
         tv_name=findViewById(R.id.name_tv);
@@ -49,6 +51,40 @@ public class User extends AppCompatActivity {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         mDatabaseRef= database.getReference().child("Upload");
         myRef= database.getReference().child("Users").child(id);
+        ratingRef=database.getReference().child("Rating").child(id);
+
+        ratingRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                String rating = dataSnapshot.getValue().toString();
+                int tRating = Integer.parseInt(rating);
+                totalRating+=tRating;
+                count+=1;
+                double average = totalRating/count;
+                String text =Double.toString(average);
+                tv_rating.setText("My Rating: "+text);
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         mDatabaseRef.addChildEventListener(new ChildEventListener() {
             @Override
