@@ -44,7 +44,7 @@ public class UserEdit extends AppCompatActivity {
     DatePickerDialog picker;
     String id,uri2;
     FirebaseDatabase database;
-    DatabaseReference myRef,mDatabase;
+    DatabaseReference myRef,mDatabase,mStatus;
     StorageReference mStorageRef;
     FirebaseStorage storage;
     FirebaseUser user,userS;
@@ -66,6 +66,7 @@ public class UserEdit extends AppCompatActivity {
         etdob.setInputType(InputType.TYPE_NULL);
         storage=FirebaseStorage.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference("Upload");
+
         mStorageRef= storage.getReference("Images");
 
         selectButton.setOnClickListener(new View.OnClickListener() {
@@ -122,7 +123,7 @@ public class UserEdit extends AppCompatActivity {
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String name,spinnerGenderString,contactString,dob;
+                final String name,spinnerGenderString,contactString,dob;
                 int contactNum=0;
 
                 spinnerGenderString = spinnerGender.getSelectedItem().toString();
@@ -138,11 +139,20 @@ public class UserEdit extends AppCompatActivity {
                     Toast.makeText(UserEdit.this,"Contact is empty!",Toast.LENGTH_SHORT).show();
 
                 }else if (!(name.isEmpty() && dob.isEmpty() && contactString.isEmpty())){
-                     myRef = database.getReference().child("Users").child(id);
+                    myRef = database.getReference().child("Users").child(id);
                     myRef.child("name").setValue(name);
                     myRef.child("contact").setValue(contactString);
                     myRef.child("dob").setValue(dob);
                     myRef.child("gender").setValue(spinnerGenderString);
+                    readData(new MyCallback() {
+                        @Override
+                        public void onCallback(String type) {
+                            if(type.equals("Tow Car Driver")){
+                                mStatus = FirebaseDatabase.getInstance().getReference("Status").child(id);
+                                mStatus.child("name").setValue(name);
+                            }
+                        }
+                    });
                     Toast.makeText(UserEdit.this, "Edited",Toast.LENGTH_SHORT).show();
                     finish();
                 }else{
@@ -220,5 +230,22 @@ public class UserEdit extends AppCompatActivity {
 
         }
 
+    }
+
+    public interface MyCallback {
+        void onCallback(String type);
+    }
+
+    public void readData(final MyCallback myCallback) {
+        database.getReference().child("Users").child(id).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String type = dataSnapshot.child("type").getValue().toString();
+                myCallback.onCallback(type);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
     }
 }
