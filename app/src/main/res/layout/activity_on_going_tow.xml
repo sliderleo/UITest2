@@ -94,7 +94,7 @@
             android:layout_toRightOf="@+id/imgview_circle"
             android:background="@drawable/custom_button_red"
             android:text="End"
-            android:layout_width="210dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"/>
 
         <Button

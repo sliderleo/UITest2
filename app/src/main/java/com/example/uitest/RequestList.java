@@ -33,7 +33,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class RequestList extends AppCompatActivity {
-private Button acceptBtn,rejectBtn,onGoingButton;
+private Button acceptBtn,rejectBtn,onGoingButton,viewMapButton;
 private ListView rListView;
 private String userId;
 private ImageButton backBtn,refreshBtn;
@@ -50,6 +50,7 @@ DatabaseReference myRef,towDRef;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_list);
+        viewMapButton=findViewById(R.id.view_map_button);
         onGoingButton=findViewById(R.id.ongoing_button);
         acceptBtn=findViewById(R.id.accept_button);
         rejectBtn=findViewById(R.id.reject_button);
@@ -145,6 +146,16 @@ DatabaseReference myRef,towDRef;
                 dialog.setArguments(bundle);
                 dialog.show(getSupportFragmentManager(),"View User");
                 return true;
+            }
+        });
+
+        viewMapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String requestId=info.getId();
+                Intent i = new Intent(RequestList.this,ViewLocation.class);
+                i.putExtra("requestId",requestId);
+                startActivity(i);
             }
         });
 

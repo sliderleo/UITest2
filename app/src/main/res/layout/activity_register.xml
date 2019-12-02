@@ -144,7 +144,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <Button
-                android:text="SUBMIT"
+                android:text="Register"
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 android:textSize="30sp"

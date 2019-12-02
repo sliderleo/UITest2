@@ -79,4 +79,5 @@
     <string name="title_activity_workshop">Map</string>
     <string name="title_activity_on_going_user">Map</string>
     <string name="title_activity_on_going_tow">Map</string>
+    <string name="title_activity_view_location">Map</string>
 </resources>

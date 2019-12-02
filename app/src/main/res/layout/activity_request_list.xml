@@ -69,28 +69,42 @@
                 android:layout_below="@+id/request_listView"
                 android:layout_marginTop="15dp"
                 android:text="Accept"
+                android:layout_alignParentLeft="true"
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 android:textSize="20sp"
                 android:id="@+id/accept_button"
                 android:background="@drawable/custom_button_green"
-                android:layout_width="match_parent"
+                android:layout_width="160dp"
                 android:layout_height="wrap_content"/>
 
             <Button
-                android:layout_below="@+id/accept_button"
+                android:layout_below="@+id/request_listView"
                 android:text="Reject"
-                android:layout_marginTop="10dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="15dp"
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 android:textSize="20sp"
                 android:id="@+id/reject_button"
                 android:background="@drawable/custom_button_red"
-                android:layout_width="match_parent"
+                android:layout_width="160dp"
                 android:layout_height="wrap_content"/>
 
             <Button
                 android:layout_below="@+id/reject_button"
+                android:text="View Location"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:id="@+id/view_map_button"
+                android:background="@drawable/custom_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:layout_below="@+id/view_map_button"
                 android:text="On Going"
                 android:layout_marginTop="10dp"
                 android:textColor="@color/white"
