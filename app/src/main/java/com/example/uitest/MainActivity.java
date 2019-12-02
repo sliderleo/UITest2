@@ -116,6 +116,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        final String uid = user.getUid();
+                        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                        DatabaseReference towRef= database.getReference().child("Users").child(uid);
+                        towRef.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                String userType= dataSnapshot.child("type").getValue().toString();
+                                if(userType.equals("Tow Car Driver")){
+                                    DatabaseReference statusRef= database.getReference().child("Status").child(uid);
+                                    statusRef.child("duty").setValue("off");
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
                         finishAffinity();
                         System.exit(0);
                     }
