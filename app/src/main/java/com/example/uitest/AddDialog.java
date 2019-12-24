@@ -19,7 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class AddDialog extends AppCompatDialogFragment {
     private EditText etPlate,etModel;
-    private Spinner spinnerBrand,spinnerColor;
+    private Spinner spinnerBrand,spinnerColor,spinnerInsurance;
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -31,6 +31,7 @@ public class AddDialog extends AppCompatDialogFragment {
         etModel=view.findViewById(R.id.et_car_model);
         spinnerBrand=view.findViewById(R.id.spinner_brand);
         spinnerColor=view.findViewById(R.id.spinner_color);
+        spinnerInsurance=view.findViewById(R.id.spinner_insurance);
 
         builder.setView(view).setTitle("Add New Vehicle").setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -44,6 +45,7 @@ public class AddDialog extends AppCompatDialogFragment {
                 String model=etModel.getText().toString();
                 String brand=spinnerBrand.getSelectedItem().toString();
                 String color=spinnerColor.getSelectedItem().toString();
+                String insurance = spinnerInsurance.getSelectedItem().toString();
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 String id = user.getUid();
 
@@ -51,7 +53,7 @@ public class AddDialog extends AppCompatDialogFragment {
                 DatabaseReference myRef = database.getReference().child("Car").child(id);
                 String carId=myRef.push().getKey();
 
-                CarInfo car = new CarInfo(carPlate,brand,model,color,carId);
+                CarInfo car = new CarInfo(carPlate,brand,model,color,carId,insurance);
                 myRef.child(carId).setValue(car);
 
             }

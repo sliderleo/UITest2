@@ -1,10 +1,10 @@
 package com.example.uitest;
 
 public class RequestInfo {
-    String userId,towDriverId,requestId,status,workshopName,car,id,userName,userContact,towDriverName;
+    String userId,towDriverId,requestId,status,workshopName,car,id,userName,userContact,towDriverName,insurance;
     double userLat,userLong,workshopLat,workshopLong,fare;
 
-    public RequestInfo(String userName,String userContact,double userLat,double userLong,double workshopLat,double workshopLong,String workshopName,String userId,String towDriverId,String towDriverName,String car,double fare,String status,String id){
+    public RequestInfo(String userName,String userContact,double userLat,double userLong,double workshopLat,double workshopLong,String workshopName,String userId,String towDriverId,String towDriverName,String car,double fare,String status,String id,String insurance){
         this.userLat=userLat;
         this.towDriverName=towDriverName;
         this.id=id;
@@ -19,6 +19,7 @@ public class RequestInfo {
         this.car=car;
         this.towDriverId=towDriverId;
         this.status=status;
+        this.insurance = insurance;
     }
      public String getUserContact(){
         return this.userContact;
@@ -29,6 +30,10 @@ public class RequestInfo {
 
     public String getTowDriverName() {
         return towDriverName;
+    }
+
+    public String getInsurance() {
+        return insurance;
     }
 
     public String getId(){

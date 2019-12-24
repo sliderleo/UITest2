@@ -16,12 +16,21 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class Login extends AppCompatActivity{
     EditText et_email,et_password;
     Button login_btn;
     FirebaseAuth firebaseAuth;
+    private FirebaseDatabase database;
+    private DatabaseReference loginref;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private String id;
+    private boolean check = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -34,6 +43,9 @@ public class Login extends AppCompatActivity{
         et_email=findViewById(R.id.login_email);
         et_password=findViewById(R.id.login_password);
         login_btn=findViewById(R.id.login_button);
+        database=FirebaseDatabase.getInstance();
+        loginref= database.getReference("Users");
+
 
         login_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,10 +81,9 @@ public class Login extends AppCompatActivity{
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser mFireBaseUSer = firebaseAuth.getCurrentUser();
                 if(mFireBaseUSer !=null){
-                    Toast.makeText(Login.this, "You are logged in",Toast.LENGTH_SHORT).show();
-                    Intent i = new Intent(Login.this, MainActivity.class);
-                    startActivity(i);
-
+                   Toast.makeText(Login.this, "You are logged in",Toast.LENGTH_SHORT).show();
+                   Intent i = new Intent(Login.this, MainActivity.class);
+                   startActivity(i);
                 }else{
                     Toast.makeText(Login.this, "Please login",Toast.LENGTH_SHORT).show();
                 }
@@ -82,7 +93,7 @@ public class Login extends AppCompatActivity{
 
     public void toRegister(View v){
         Intent i;
-        i = new Intent(this, Register.class);startActivity(i);
+        i = new Intent(this, RegisterType.class);startActivity(i);
     }
 
 

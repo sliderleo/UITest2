@@ -71,8 +71,10 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
     private static final int REQUEST_USER_LOCATION_CODE = 99;
     private double userLat, userLong, locationLat, locationLong;
     private android.location.LocationListener locationListener;
+    private List<String> carList = new ArrayList<String>();
     private ArrayList<String> mDriver = new ArrayList<>();
-    String id, towid, locationName,myName,Dname;
+    private List<String> insuranceList = new ArrayList<>();
+    String id, towid, locationName,myName,Dname,carplate,carinsurance;
     String driverName=null;
     ListView driverList;
     double price;
@@ -169,13 +171,16 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
             }
         });
 
-        Query query = carRef.orderByChild("plate");
+        //.orderByChild("plate")
+        Query query = carRef;
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                final List<String> carList = new ArrayList<String>();
+
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                     String car = dataSnapshot1.child("plate").getValue(String.class);
+                    String cinsurance = dataSnapshot1.child("insurance").getValue(String.class);
+                    insuranceList.add(cinsurance);
                     carList.add(car);
                 }
                 if(carList.isEmpty()){
@@ -257,6 +262,19 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
             }
         });
 
+        car_spinner1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                carplate=carList.get(position);
+                carinsurance=insuranceList.get(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
 
 
         requestBtn.setOnClickListener(new View.OnClickListener() {
@@ -286,7 +304,8 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
                                 public void onClick(DialogInterface dialog, int which) {
                                     DatabaseReference reqRef=database.getReference().child("Request");
                                     String reqId=reqRef.push().getKey();
-                                    RequestInfo info = new RequestInfo(nameS,contactS,userLat,userLong,locationLat,locationLong,locationName,id,driverName,Dname,car,price,"Pending",reqId);
+
+                                    RequestInfo info = new RequestInfo(nameS,contactS,userLat,userLong,locationLat,locationLong,locationName,id,driverName,Dname,car,price,"Pending",reqId,carinsurance);
                                     reqRef.child(reqId).setValue(info);
                                     Toast.makeText(Request.this,"Request Successfully" , Toast.LENGTH_SHORT).show();
                                 }

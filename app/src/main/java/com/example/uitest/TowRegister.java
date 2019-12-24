@@ -34,13 +34,11 @@ import com.google.firebase.storage.UploadTask;
 
 import java.util.Calendar;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-
-public class UserRegister extends AppCompatActivity {
-    private EditText etDob,etName,etContact,etDesc;
+public class TowRegister extends AppCompatActivity {
+    private EditText etDob,etName,etContact,etDesc,etCompanyname,etInsurance;
     private DatePickerDialog picker;
     private Spinner sGender;
-    private Button submit_button,select_button;
+    private Button submit_button,select_button,pdf_button;
     ImageView imgv;
     String uri2;
     StorageReference mStorageRef;
@@ -48,23 +46,23 @@ public class UserRegister extends AppCompatActivity {
     FirebaseStorage storage;
     FirebaseUser userS;
     public Uri imguri;
-    String name,spinnerGender,spinnerUser,contactString,dob,id,desc;
+    String name,spinnerGender,contactString,dob,id,desc;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_register);
+        setContentView(R.layout.activity_tow_register);
         etDesc=findViewById(R.id.et_desc);
         etName=findViewById(R.id.et_name);
         etContact=findViewById(R.id.et_contact);
+        etCompanyname=findViewById(R.id.et_company_name);
+        etInsurance=findViewById(R.id.et_insurance);
         imgv=findViewById(R.id.image_view);
         storage=FirebaseStorage.getInstance();
         userS = FirebaseAuth.getInstance().getCurrentUser();
         mStorageRef= storage.getReference("Images");
         mDatabase = FirebaseDatabase.getInstance().getReference("Upload");
-        //spinner
         sGender =findViewById(R.id.spinner_gender);
 
-        //dob settings
         etDob= findViewById(R.id.et_dob);
         etDob.setInputType(InputType.TYPE_NULL);
         etDob.setOnClickListener(new View.OnClickListener() {
@@ -75,7 +73,7 @@ public class UserRegister extends AppCompatActivity {
                 int month = cldr.get(Calendar.MONTH);
                 int year = cldr.get(Calendar.YEAR);
 
-                picker = new DatePickerDialog(UserRegister.this, new DatePickerDialog.OnDateSetListener() {
+                picker = new DatePickerDialog(TowRegister.this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                         etDob.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
@@ -86,6 +84,7 @@ public class UserRegister extends AppCompatActivity {
         });
 
         select_button=findViewById(R.id.select_button);
+        pdf_button=findViewById(R.id.pdf_button);
         select_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,67 +96,26 @@ public class UserRegister extends AppCompatActivity {
 
 
         submit_button=findViewById(R.id.submit_button);
-        submit_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                int contactNum=0;
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                id = user.getUid();
-                desc=etDesc.getText().toString();
-                spinnerGender = sGender.getSelectedItem().toString();
-                name=etName.getText().toString();
-                contactString=etContact.getText().toString();
-                dob=etDob.getText().toString();
-
-                if(contactString.isEmpty()){
-                    Toast.makeText(UserRegister.this,"Contact number is empty!",Toast.LENGTH_SHORT).show();
-                }else if(desc.isEmpty()){
-                    Toast.makeText(UserRegister.this,"The description is empty!",Toast.LENGTH_SHORT).show();
-                }
-
-
-                if(name.isEmpty()){
-                    Toast.makeText(UserRegister.this,"Name is empty!",Toast.LENGTH_SHORT).show();
-                }else if(dob.isEmpty()){
-                    Toast.makeText(UserRegister.this,"DOB is empty!",Toast.LENGTH_SHORT).show();
-                }else if (!(name.isEmpty() && dob.isEmpty())){
-                    FileUploader();
-                    UserInfo userInfo=new UserInfo(name,spinnerGender,"Driver",dob,contactString,desc,"1");
-                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference myRef = database.getReference().child("Users").child(id);
-                    myRef.setValue(userInfo);
-
-                    if(spinnerUser.equals("Tow Car Driver")){
-                       addStatus();
-                    }
-                    Toast.makeText(UserRegister.this, "Registered",Toast.LENGTH_SHORT).show();
-                    toLogin();
-                }else{
-                    Toast.makeText(UserRegister.this,"Error Occurred!",Toast.LENGTH_SHORT).show();
-                }
+    }
 
 
 
-            }
-        });
 
-}
-public void toLogin(){
-    FirebaseAuth.getInstance().signOut();
-    Intent i = new Intent(UserRegister.this, Login.class);
-    finishAffinity();
-    startActivity(i);
-}
+    public void toLogin(){
+        FirebaseAuth.getInstance().signOut();
+        Intent i = new Intent(TowRegister.this, Login.class);
+        finishAffinity();
+        startActivity(i);
+    }
 
-public void addStatus(){
-    Status stat=new Status(name,id,"off");
-    FirebaseDatabase databaseTow = FirebaseDatabase.getInstance();
-    DatabaseReference myRef = databaseTow.getReference().child("Rating").child(id);
-    DatabaseReference towRef = databaseTow.getReference().child("Status").child(id);
-    towRef.setValue(stat);
-    myRef.push().setValue(1);
-}
+    public void addStatus(){
+        Status stat=new Status(name,id,"off");
+        FirebaseDatabase databaseTow = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = databaseTow.getReference().child("Rating").child(id);
+        DatabaseReference towRef = databaseTow.getReference().child("Status").child(id);
+        towRef.setValue(stat);
+        myRef.push().setValue(1);
+    }
 
     private String getExtension(Uri uri){
         ContentResolver cr = getContentResolver();
@@ -166,6 +124,13 @@ public void addStatus(){
     }
 
     private void FileChooser(){
+        Intent i = new Intent();
+        i.setType("image/*");
+        i.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(i,1);
+    }
+
+    private void PDFChooser(){
         Intent i = new Intent();
         i.setType("image/*");
         i.setAction(Intent.ACTION_GET_CONTENT);
@@ -184,7 +149,7 @@ public void addStatus(){
                                 @Override
                                 public void onSuccess(Uri uri) {
                                     String downloadlink=uri.toString();
-                                    Toast.makeText(UserRegister.this,"Upload Successful",Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(TowRegister.this,"Upload Successful",Toast.LENGTH_SHORT).show();
                                     String name = userS.getUid();
                                     UploadInfo upload = new UploadInfo(name,downloadlink);
                                     mDatabase.child(userS.getUid()).setValue(upload);
@@ -205,7 +170,7 @@ public void addStatus(){
                 }
             });
         }else{
-            Toast.makeText(UserRegister.this,"No Image Selected",Toast.LENGTH_SHORT).show();
+            Toast.makeText(TowRegister.this,"No Image Selected",Toast.LENGTH_SHORT).show();
         }
 
 
@@ -213,7 +178,7 @@ public void addStatus(){
 
     @Override
     public void onBackPressed() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(UserRegister.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(TowRegister.this);
         builder.setTitle("Wait don't leave yet!!!");
         builder.setMessage("Please fill up everything !")
                 .setCancelable(false)

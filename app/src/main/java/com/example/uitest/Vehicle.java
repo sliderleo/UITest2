@@ -3,10 +3,14 @@ package com.example.uitest;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -14,6 +18,8 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -35,6 +41,9 @@ public class Vehicle extends AppCompatActivity{
     private ArrayList<String> mCarList = new ArrayList<>();
     private ArrayList<String> carId = new ArrayList<>();
 
+    private FirebaseRecyclerOptions<CarInfo> options;
+    private FirebaseRecyclerAdapter<CarInfo,FirebaseViewHolder> fireAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +55,25 @@ public class Vehicle extends AppCompatActivity{
         myRef= database.getReference("Car").child(id);
         deleteBtn=findViewById(R.id.delete_button);
         listView=findViewById(R.id.car_list_view);
+//        listView.setHasFixedSize(true);
+//        listView.setLayoutManager(new LinearLayoutManager(this));
+//        options = new FirebaseRecyclerOptions.Builder<CarInfo>().setQuery(myRef,CarInfo.class).build();
+//
+//        fireAdapter=new FirebaseRecyclerAdapter<CarInfo, FirebaseViewHolder>(options) {
+//            @Override
+//            protected void onBindViewHolder(@NonNull FirebaseViewHolder firebaseViewHolder, int i, @NonNull CarInfo carInfo) {
+//                firebaseViewHolder.carplate.setText("Car Plate: "+carInfo.getPlate());
+//                firebaseViewHolder.model.setText("Model: "+carInfo.getModel());
+//                firebaseViewHolder.insurance.setText("Insurance: "+carInfo.getInsurance());
+//            }
+//
+//            @NonNull
+//            @Override
+//            public FirebaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+//                return new FirebaseViewHolder(LayoutInflater.from(Vehicle.this).inflate(R.layout.row,parent,false));
+//            }
+//        };
+
 
         final ArrayAdapter<String> arrayAdapter= new ArrayAdapter<String>(this,R.layout.mytextview, mCarList);
         listView.setAdapter(arrayAdapter);

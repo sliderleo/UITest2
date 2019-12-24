@@ -4,8 +4,9 @@
     <string name="car_brand">Car Brand</string>
     <string name="car_brand_text">Car Brand</string>
     <string name="car_color_text">Car Color</string>
+    <string name="insurance_company_text">Insurance Company</string>
 
-    <string name="register_text_3"> Description about yourself (Which Insurance Company Policyholder) (Company Name, Insurance Coverage for Tow Car Driver) </string>
+    <string name="register_text_3"> Description about yourself</string>
     <string name="latitude"> Latitude: </string>
     <string name="longitude"> Longitude: </string>
 
@@ -27,6 +28,37 @@
     <string-array name="gender_array">
         <item>Male</item>
         <item>Female</item>
+    </string-array>
+
+    <string-array name="insurance_company">
+        <item>None</item>
+        <item>AIG Malaysia Insurance</item>
+        <item>Allianz General Insurance</item>
+        <item>AIA General Insurance</item>
+        <item>AmGeneral Insurance</item>
+        <item>ACR</item>
+        <item>AXA Affin</item>
+        <item>Berjaya Sompo Insurance</item>
+        <item>Chubb Insurance</item>
+        <item>Etiqa General Insurance</item>
+        <item>Great Eastern General Insurance</item>
+        <item>Hannover Re Insurance</item>
+        <item>Liberty Insurance</item>
+        <item>Lonpac Insurance</item>
+        <item>MSIG Malaysia</item>
+        <item>Malaysian Reinsurance</item>
+        <item>MPI Generali Insurance</item>
+        <item>P&amp;O Insurance</item>
+        <item>Progressive Insurance</item>
+        <item>QBE Insurance</item>
+        <item>RHB Insurance</item>
+        <item>Swiss Re Reinsurance</item>
+        <item>Pacific Insurance</item>
+        <item>Tokio Marine Insurance</item>
+        <item>Toa Reinsurance</item>
+        <item>Tune Protect</item>
+        <item>Zurich</item>
+
     </string-array>
 
     <string-array name="car_colors">
