@@ -28,7 +28,7 @@ public class RegisterType extends AppCompatActivity implements View.OnClickListe
 
         switch(v.getId()) {
             case R.id.card_user: i = new Intent(this, UserRegister.class);startActivity(i);break;
-            case R.id.card_tow: i = new Intent(this, Vehicle.class);startActivity(i);break;
+            case R.id.card_tow: i = new Intent(this, TowRegister.class);startActivity(i);break;
 
         }
     }

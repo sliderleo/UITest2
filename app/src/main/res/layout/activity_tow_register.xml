@@ -325,7 +325,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:text="Select insurance coverage"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="5dp"
             android:textColor="@color/white"
             android:textSize="18sp"
             >

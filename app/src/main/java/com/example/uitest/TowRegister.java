@@ -3,6 +3,7 @@ package com.example.uitest;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -32,9 +33,10 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
-public class TowRegister extends AppCompatActivity {
+public class TowRegister extends AppCompatActivity implements InsuranceDialog.onInsuranceDialog{
     private EditText etDob,etName,etContact,etDesc,etCompanyname,etInsurance;
     private DatePickerDialog picker;
     private Spinner sGender;
@@ -91,11 +93,18 @@ public class TowRegister extends AppCompatActivity {
                 FileChooser();
             }
         });
-
-
-
+        etInsurance.setInputType(InputType.TYPE_NULL);
 
         submit_button=findViewById(R.id.submit_button);
+
+        etInsurance.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment insurancedialog = new InsuranceDialog();
+                insurancedialog.setCancelable(false);
+                insurancedialog.show(getSupportFragmentManager(),"Insurance");
+            }
+        });
     }
 
 
@@ -130,12 +139,6 @@ public class TowRegister extends AppCompatActivity {
         startActivityForResult(i,1);
     }
 
-    private void PDFChooser(){
-        Intent i = new Intent();
-        i.setType("image/*");
-        i.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(i,1);
-    }
 
     private void FileUploader(){
         if(imguri !=null){
@@ -200,5 +203,21 @@ public class TowRegister extends AppCompatActivity {
 
         }
 
+    }
+
+
+    @Override
+    public void onPositiveButtonClicked(String[] list, ArrayList<String> selectedItemList) {
+        StringBuilder sb = new StringBuilder();
+        for (String str:selectedItemList){
+            sb.append(str+",");
+        }
+        etInsurance.setText(sb);
+    }
+
+    @Override
+    public void onNegativeButtonClicked() {
+        String text = "None";
+        etInsurance.setText(text);
     }
 }
