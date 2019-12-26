@@ -7,17 +7,20 @@
     android:layout_height="match_parent"
     tools:context=".AdminViewTow">
 
+
     <ListView
         android:id="@+id/towdriver_listview"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="80dp"
         android:background="@color/colorMatte"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="500dp">
 
     </ListView>
 
     <Button
+        android:layout_below="@+id/towdriver_listview"
         android:text="Enter"
+        android:layout_marginTop="10dp"
         android:textColor="@color/white"
         android:textStyle="bold"
         android:textSize="30sp"

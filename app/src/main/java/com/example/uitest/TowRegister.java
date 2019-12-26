@@ -324,6 +324,7 @@ public class TowRegister extends AppCompatActivity implements InsuranceDialog.on
                         sRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
+                                String tname = etName.getText().toString();
                                 companyname=etCompanyname.getText().toString();
                                 insurancecover=etInsurance.getText().toString();
                                 String downloadurl=uri.toString();
@@ -333,7 +334,7 @@ public class TowRegister extends AppCompatActivity implements InsuranceDialog.on
                                     Toast.makeText(TowRegister.this, "Insurance coverage is empty!", Toast.LENGTH_SHORT).show();
                                 }else if(!companyname.isEmpty() && !insurancecover.isEmpty()){
                                     Toast.makeText(TowRegister.this, "File Uploaded Successfully", Toast.LENGTH_SHORT).show();
-                                    CompanyInfo upload = new CompanyInfo(companyname,id,insurancecover,downloadurl);
+                                    CompanyInfo upload = new CompanyInfo(companyname,tname,userS.getUid(),insurancecover,downloadurl,"0");
                                     mComDatabase.child(userS.getUid()).setValue(upload);
                                 }else{
                                     Toast.makeText(TowRegister.this, "Error", Toast.LENGTH_SHORT).show();
