@@ -31,7 +31,6 @@
     </string-array>
 
     <string-array name="insurance_company">
-        <item>None</item>
         <item>AIG Malaysia Insurance</item>
         <item>Allianz General Insurance</item>
         <item>AIA General Insurance</item>

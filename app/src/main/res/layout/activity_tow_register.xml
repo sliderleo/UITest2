@@ -67,6 +67,8 @@
                 android:background="@android:color/transparent"
                 android:padding="10dp">
             </EditText>
+
+
         </androidx.cardview.widget.CardView>
 
         <View
@@ -88,13 +90,12 @@
 
             <Spinner
                 android:id="@+id/spinner_gender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:entries="@array/gender_array"
                 android:padding="15dp"
                 android:prompt="@string/gender"
-                android:textAlignment="center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            </Spinner>
+                android:textAlignment="center"/>
         </androidx.cardview.widget.CardView>
 
         <View

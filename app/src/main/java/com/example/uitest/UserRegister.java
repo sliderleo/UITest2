@@ -128,9 +128,6 @@ public class UserRegister extends AppCompatActivity {
                     DatabaseReference myRef = database.getReference().child("Users").child(id);
                     myRef.setValue(userInfo);
 
-                    if(spinnerUser.equals("Tow Car Driver")){
-                       addStatus();
-                    }
                     Toast.makeText(UserRegister.this, "Registered",Toast.LENGTH_SHORT).show();
                     toLogin();
                 }else{
@@ -156,7 +153,7 @@ public void addStatus(){
     DatabaseReference myRef = databaseTow.getReference().child("Rating").child(id);
     DatabaseReference towRef = databaseTow.getReference().child("Status").child(id);
     towRef.setValue(stat);
-    myRef.push().setValue(1);
+    myRef.push().setValue(5);
 }
 
     private String getExtension(Uri uri){
@@ -214,12 +211,14 @@ public void addStatus(){
     @Override
     public void onBackPressed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(UserRegister.this);
-        builder.setTitle("Wait don't leave yet!!!");
-        builder.setMessage("Please fill up everything !")
+        builder.setTitle("Return to the previous page");
+        builder.setMessage("Are you sure ?")
                 .setCancelable(false)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-
+                        finishAffinity();
+                        Intent i = new Intent(UserRegister.this,RegisterType.class);
+                        startActivity(i);
                     }
                 });
         AlertDialog alert = builder.create();

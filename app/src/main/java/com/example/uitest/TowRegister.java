@@ -3,15 +3,20 @@ package com.example.uitest;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.InputType;
 import android.view.View;
 import android.webkit.MimeTypeMap;
@@ -43,12 +48,13 @@ public class TowRegister extends AppCompatActivity implements InsuranceDialog.on
     private Button submit_button,select_button,pdf_button;
     ImageView imgv;
     String uri2;
-    StorageReference mStorageRef;
-    DatabaseReference mDatabase;
+    StorageReference mStorageRef,mCompanyRef;
+    DatabaseReference mDatabase,mComDatabase;
     FirebaseStorage storage;
     FirebaseUser userS;
     public Uri imguri;
-    String name,spinnerGender,contactString,dob,id,desc;
+    String name,spinnerGender,contactString,dob,id,desc,companyname,insurancecover;
+    final static int PICK_PDF_CODE = 2342;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +68,9 @@ public class TowRegister extends AppCompatActivity implements InsuranceDialog.on
         storage=FirebaseStorage.getInstance();
         userS = FirebaseAuth.getInstance().getCurrentUser();
         mStorageRef= storage.getReference("Images");
+        mCompanyRef= storage.getReference("Files");
         mDatabase = FirebaseDatabase.getInstance().getReference("Upload");
+        mComDatabase = FirebaseDatabase.getInstance().getReference("Company");
         sGender =findViewById(R.id.spinner_gender);
 
         etDob= findViewById(R.id.et_dob);
@@ -105,6 +113,61 @@ public class TowRegister extends AppCompatActivity implements InsuranceDialog.on
                 insurancedialog.show(getSupportFragmentManager(),"Insurance");
             }
         });
+
+        pdf_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getPDF();
+            }
+        });
+
+        select_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FileChooser();
+            }
+        });
+
+        submit_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                int contactNum=0;
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                id = user.getUid();
+                desc=etDesc.getText().toString();
+                spinnerGender = sGender.getSelectedItem().toString();
+                name=etName.getText().toString();
+                contactString=etContact.getText().toString();
+                dob=etDob.getText().toString();
+
+
+                if(contactString.isEmpty()){
+                    Toast.makeText(TowRegister.this,"Contact number is empty!",Toast.LENGTH_SHORT).show();
+                }else if(desc.isEmpty()){
+                    Toast.makeText(TowRegister.this,"The description is empty!",Toast.LENGTH_SHORT).show();
+                }else  if(name.isEmpty()){
+                    Toast.makeText(TowRegister.this,"Name is empty!",Toast.LENGTH_SHORT).show();
+                }else if(dob.isEmpty()) {
+                    Toast.makeText(TowRegister.this, "DOB is empty!", Toast.LENGTH_SHORT).show();
+                }else if (companyname.isEmpty()){
+                    Toast.makeText(TowRegister.this, "Company name is empty!", Toast.LENGTH_SHORT).show();
+                }else if(insurancecover.isEmpty()){
+                    Toast.makeText(TowRegister.this, "Insurance coverage is empty!", Toast.LENGTH_SHORT).show();
+                }else{
+                    FileUploader();
+                    UserInfo userInfo=new UserInfo(name,spinnerGender,"Tow Car Driver",dob,contactString,desc,"0");
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference myRef = database.getReference().child("Users").child(id);
+                    myRef.setValue(userInfo);
+                    Toast.makeText(TowRegister.this, "Registered, please wait for admin to approve.",Toast.LENGTH_SHORT).show();
+                    toLogin();
+                }
+
+
+
+            }
+        });
     }
 
 
@@ -123,7 +186,7 @@ public class TowRegister extends AppCompatActivity implements InsuranceDialog.on
         DatabaseReference myRef = databaseTow.getReference().child("Rating").child(id);
         DatabaseReference towRef = databaseTow.getReference().child("Status").child(id);
         towRef.setValue(stat);
-        myRef.push().setValue(1);
+        myRef.push().setValue(5);
     }
 
     private String getExtension(Uri uri){
@@ -182,12 +245,14 @@ public class TowRegister extends AppCompatActivity implements InsuranceDialog.on
     @Override
     public void onBackPressed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(TowRegister.this);
-        builder.setTitle("Wait don't leave yet!!!");
-        builder.setMessage("Please fill up everything !")
+        builder.setTitle("Return to the previous page");
+        builder.setMessage("Are you sure ?")
                 .setCancelable(false)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-
+                        finishAffinity();
+                        Intent i = new Intent(TowRegister.this,RegisterType.class);
+                        startActivity(i);
                     }
                 });
         AlertDialog alert = builder.create();
@@ -200,7 +265,16 @@ public class TowRegister extends AppCompatActivity implements InsuranceDialog.on
         if(requestCode==1 && resultCode==RESULT_OK && data!=null && data.getData()!=null){
             imguri=data.getData();
             imgv.setImageURI(imguri);
+        }
 
+        if (requestCode == PICK_PDF_CODE && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            //if a file is selected
+            if (data.getData() != null) {
+                //uploading the file
+                uploadFile(data.getData());
+            }else{
+                Toast.makeText(this, "No file chosen", Toast.LENGTH_SHORT).show();
+            }
         }
 
     }
@@ -219,5 +293,59 @@ public class TowRegister extends AppCompatActivity implements InsuranceDialog.on
     public void onNegativeButtonClicked() {
         String text = "None";
         etInsurance.setText(text);
+    }
+
+    private void getPDF() {
+        //for greater than lolipop versions we need the permissions asked on runtime
+        //so if the permission is not available user will go to the screen to allow storage permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.parse("package:" + getPackageName()));
+            startActivity(intent);
+            return;
+        }
+
+        //creating an intent for file chooser
+        Intent intent = new Intent();
+        intent.setType("application/pdf");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select PDF"), PICK_PDF_CODE);
+    }
+
+
+    private void uploadFile(Uri data) {
+        StorageReference sRef = mCompanyRef.child(userS.getUid() + ".pdf");
+        sRef.putFile(data)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        companyname=etCompanyname.getText().toString();
+                        insurancecover=etInsurance.getText().toString();
+
+                        if(companyname.isEmpty()){
+                            Toast.makeText(TowRegister.this, "Company name is empty", Toast.LENGTH_SHORT).show();
+                        }else if(insurancecover.isEmpty()){
+                            Toast.makeText(TowRegister.this, "Insurance coverage is empty!", Toast.LENGTH_SHORT).show();
+                        }else if(!companyname.isEmpty() && !insurancecover.isEmpty()){
+
+                        }else{
+
+                        }
+                        Toast.makeText(TowRegister.this, "File Uploaded Successfully", Toast.LENGTH_SHORT).show();
+                        CompanyInfo upload = new CompanyInfo(companyname,id,insurancecover,taskSnapshot.getMetadata().getReference().getDownloadUrl().toString());
+                        mComDatabase.child(userS.getUid()).setValue(upload);
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+
+
     }
 }

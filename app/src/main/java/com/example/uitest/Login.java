@@ -93,7 +93,7 @@ public class Login extends AppCompatActivity{
 
     public void toRegister(View v){
         Intent i;
-        i = new Intent(this, RegisterType.class);startActivity(i);
+        i = new Intent(this, Register.class);startActivity(i);
     }
 
 
