@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 case R.id.profCard: i = new Intent(this, User.class);startActivity(i);break;
                 case R.id.vehicleCard: i = new Intent(this, Vehicle.class);startActivity(i);break;
                 case R.id.towCard: i = new Intent(this, Request.class);startActivity(i);break;
-                case R.id.locationCard: i = new Intent(this, Workshop.class);startActivity(i);break;
+                case R.id.locationCard: i = new Intent(this, AdminViewTow.class);startActivity(i);break;
                 case R.id.history: i = new Intent(this, HIstoryList.class);startActivity(i);break;
             }
         }

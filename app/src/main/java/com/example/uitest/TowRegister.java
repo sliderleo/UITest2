@@ -316,26 +316,32 @@ public class TowRegister extends AppCompatActivity implements InsuranceDialog.on
 
 
     private void uploadFile(Uri data) {
-        StorageReference sRef = mCompanyRef.child(userS.getUid() + ".pdf");
+        final StorageReference sRef = mCompanyRef.child(userS.getUid() + ".pdf");
         sRef.putFile(data)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        companyname=etCompanyname.getText().toString();
-                        insurancecover=etInsurance.getText().toString();
+                        sRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                companyname=etCompanyname.getText().toString();
+                                insurancecover=etInsurance.getText().toString();
+                                String downloadurl=uri.toString();
+                                if(companyname.isEmpty()){
+                                    Toast.makeText(TowRegister.this, "Company name is empty", Toast.LENGTH_SHORT).show();
+                                }else if(insurancecover.isEmpty()){
+                                    Toast.makeText(TowRegister.this, "Insurance coverage is empty!", Toast.LENGTH_SHORT).show();
+                                }else if(!companyname.isEmpty() && !insurancecover.isEmpty()){
+                                    Toast.makeText(TowRegister.this, "File Uploaded Successfully", Toast.LENGTH_SHORT).show();
+                                    CompanyInfo upload = new CompanyInfo(companyname,id,insurancecover,downloadurl);
+                                    mComDatabase.child(userS.getUid()).setValue(upload);
+                                }else{
+                                    Toast.makeText(TowRegister.this, "Error", Toast.LENGTH_SHORT).show();
+                                }
 
-                        if(companyname.isEmpty()){
-                            Toast.makeText(TowRegister.this, "Company name is empty", Toast.LENGTH_SHORT).show();
-                        }else if(insurancecover.isEmpty()){
-                            Toast.makeText(TowRegister.this, "Insurance coverage is empty!", Toast.LENGTH_SHORT).show();
-                        }else if(!companyname.isEmpty() && !insurancecover.isEmpty()){
+                            }
+                        });
 
-                        }else{
-
-                        }
-                        Toast.makeText(TowRegister.this, "File Uploaded Successfully", Toast.LENGTH_SHORT).show();
-                        CompanyInfo upload = new CompanyInfo(companyname,id,insurancecover,taskSnapshot.getMetadata().getReference().getDownloadUrl().toString());
-                        mComDatabase.child(userS.getUid()).setValue(upload);
 
                     }
                 })
