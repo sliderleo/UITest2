@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -27,9 +29,13 @@ import java.util.List;
 
 public class AdminViewTow extends AppCompatActivity {
     ListView listView;
+    ImageButton backbtn;
+    Button approveBtn;
+    Info info;
     DatabaseReference mDatabaseReference;
     List<String> uploadlist;
-    private ArrayList<String> towid = new ArrayList<>();
+    DatabaseReference statusRef,towDRef;
+    private ArrayList<String> towidList = new ArrayList<>();
     private FirebaseDatabase database;
     private ArrayList<String> mReqList = new ArrayList<>();
     @Override
@@ -38,15 +44,63 @@ public class AdminViewTow extends AppCompatActivity {
         setContentView(R.layout.activity_admin_view_tow);
         database = FirebaseDatabase.getInstance();
         uploadlist=new ArrayList<>();
+        info=new Info();
         listView=findViewById(R.id.towdriver_listview);
         final ArrayAdapter<String> rArrayAdapter=new ArrayAdapter<>(getApplicationContext(),R.layout.mytextview,mReqList);
         listView.setAdapter(rArrayAdapter);
+        backbtn=findViewById(R.id.img_back);
         mDatabaseReference = database.getReference().child("Company");
+        statusRef=database.getReference().child("Users");
+        towDRef=database.getReference().child("Company");
+        approveBtn=findViewById(R.id.submit_button);
+
+
+        backbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        approveBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String towid=info.getId();
+                if(towid == null){
+                    Toast.makeText(AdminViewTow.this,"Please select a tow car driver!!",Toast.LENGTH_LONG).show();
+                }else{
+                    AlertDialog.Builder builder = new AlertDialog.Builder(AdminViewTow.this);
+                    builder.setTitle("Tow Car App");
+                    builder.setMessage("Approve the tow car driver ?");
+                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            statusRef=database.getReference("Company/"+towid);
+                            towDRef=database.getReference("Users/"+towid);
+                            statusRef.child("status").setValue("1");
+                            towDRef.child("status").setValue("1");
+                            Toast.makeText(AdminViewTow.this,"Approved!!",Toast.LENGTH_LONG).show();
+                            finish();
+                            startActivity(getIntent());
+                        }
+                    });
+                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+
+                }
+            }
+        });
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                String content=towidList.get(position);
+                info.setId(content);
             }
         });
 
@@ -87,6 +141,7 @@ public class AdminViewTow extends AppCompatActivity {
                 String towid = dataSnapshot.child("towdriverid").getValue().toString();
                  if(stat.equals("0")){
                      String text = "Name: "+name+"\nCompany Name: "+companyname+"\nStatus: Waiting for Approval";
+                     towidList.add(towid);
                      uploadlist.add(pdf);
                      mReqList.add(text);
                  }

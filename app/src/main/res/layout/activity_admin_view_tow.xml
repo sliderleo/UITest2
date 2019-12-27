@@ -3,15 +3,52 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@drawable/bg"
+    android:background="@color/colorMatte"
     android:layout_height="match_parent"
     tools:context=".AdminViewTow">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/img_back"
+            android:src="@drawable/back_white"
+            android:layout_marginTop="5dp"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_alignParentLeft="true"
+            android:background="@null"/>
+
+        <TextView
+            android:text="Awaiting Approvals"
+            android:id="@+id/title_text"
+            android:layout_marginTop="5dp"
+            android:textSize="25sp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:layout_centerHorizontal="true"
+            android:textAlignment="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:layout_below="@id/title_text"
+            android:textAlignment="center"
+            android:text="Here is where all the awaiting approvals at, long hold on the name to download the company details"
+            android:layout_centerHorizontal="true"
+            android:textSize="15sp"
+            android:textColor="@color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </RelativeLayout>
 
 
     <ListView
         android:id="@+id/towdriver_listview"
         android:layout_marginTop="80dp"
-        android:background="@color/colorMatte"
+        android:background="@color/colorGrey"
         android:layout_width="match_parent"
         android:layout_height="500dp">
 
@@ -19,13 +56,13 @@
 
     <Button
         android:layout_below="@+id/towdriver_listview"
-        android:text="Enter"
+        android:text="Approve"
         android:layout_marginTop="10dp"
         android:textColor="@color/white"
         android:textStyle="bold"
         android:textSize="30sp"
         android:id="@+id/submit_button"
-        android:background="@drawable/custom_button"
+        android:background="@drawable/custom_button_green"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 </RelativeLayout>
