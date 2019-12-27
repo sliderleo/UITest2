@@ -49,13 +49,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mFirebaseAuth=FirebaseAuth.getInstance();
         database=FirebaseDatabase.getInstance();
-        loginref= database.getReference("Users");
+        loginref= database.getReference("Users").child(id);
         mDatabaseRef= database.getReference().child("Upload");
 
         prof.setOnClickListener(this);
         vehicle.setOnClickListener(this);
         history.setOnClickListener(this);
         location.setOnClickListener(this);
+
+
+        loginref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String utype=dataSnapshot.child("type").getValue().toString();
+                if(utype.equals("Admin")){
+                    Toast.makeText(MainActivity.this, "Redirected to admin dashboard", Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(MainActivity.this, AdminMain.class);
+                    startActivity(i);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         mDatabaseRef.addChildEventListener(new ChildEventListener() {
             @Override
