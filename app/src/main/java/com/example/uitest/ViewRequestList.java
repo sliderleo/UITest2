@@ -149,29 +149,56 @@ public class ViewRequestList extends AppCompatActivity {
                 String contact = dataSnapshot.child("userContact").getValue().toString();
                 String callerID = dataSnapshot.child("userId").getValue().toString();
                 String towName = dataSnapshot.child("towDriverName").getValue().toString();
+                String pay = dataSnapshot.child("payment").getValue().toString();
                 String status=dataSnapshot.child("status").getValue().toString();
                 String fareS = dataSnapshot.child("fare").getValue().toString();
                 DecimalFormat d = new DecimalFormat("0.00");
                 double fare = Double.parseDouble(fareS);
                 String fareL=d.format(fare);
+                if(rArrayAdapter.getCount()!=0){
+                    mReqList.clear();
+                    towIdList.clear();
+                    reqId.clear();
+                    statusList.clear();
+                    if(userId.equals(callerID) && status.equals("Pending")){
+                        String text = "Selected Driver: "+towName
+                                +"\nDrop off Location: "+locName+"\nFare: RM"+fareL+"\nStatus: "+status+"\nPayment type: "+pay;
+                        mReqList.add(text);
+                        towIdList.add(towId);
+                        reqId.add(requestId);
+                        statusList.add(status);
+                        rArrayAdapter.notifyDataSetChanged();
+                    }else if(userId.equals(callerID) && status.equals("Accepted")){
+                        String text = "Selected Driver: "+towName
+                                +"\nDrop off Location: "+locName+"\nFare: RM"+fareL+"\nStatus: "+status+"\nPayment type: "+pay;
+                        mReqList.add(text);
+                        towIdList.add(towId);
+                        reqId.add(requestId);
+                        statusList.add(status);
+                        rArrayAdapter.notifyDataSetChanged();
+                    }
 
-                if(userId.equals(callerID) && status.equals("Pending")){
-                    String text = "Selected Driver: "+towName
-                            +"\nDrop off Location: "+locName+"\nFare: RM"+fareL+"\nStatus: "+status;
-                    mReqList.add(text);
-                    towIdList.add(towId);
-                    reqId.add(requestId);
-                    statusList.add(status);
-                    rArrayAdapter.notifyDataSetChanged();
-                }else if(userId.equals(callerID) && status.equals("Accepted")){
-                    String text = "Selected Driver: "+towName
-                            +"\nDrop off Location: "+locName+"\nFare: RM"+fareL+"\nStatus: "+status;
-                    mReqList.add(text);
-                    towIdList.add(towId);
-                    reqId.add(requestId);
-                    statusList.add(status);
-                    rArrayAdapter.notifyDataSetChanged();
+                }else{
+                    if(userId.equals(callerID) && status.equals("Pending")){
+                        String text = "Selected Driver: "+towName
+                                +"\nDrop off Location: "+locName+"\nFare: RM"+fareL+"\nStatus: "+status+"\nPayment type: "+pay;
+                        mReqList.add(text);
+                        towIdList.add(towId);
+                        reqId.add(requestId);
+                        statusList.add(status);
+                        rArrayAdapter.notifyDataSetChanged();
+                    }else if(userId.equals(callerID) && status.equals("Accepted")){
+                        String text = "Selected Driver: "+towName
+                                +"\nDrop off Location: "+locName+"\nFare: RM"+fareL+"\nStatus: "+status+"\nPayment type: "+pay;
+                        mReqList.add(text);
+                        towIdList.add(towId);
+                        reqId.add(requestId);
+                        statusList.add(status);
+                        rArrayAdapter.notifyDataSetChanged();
+                    }
                 }
+
+
             }
 
             @Override

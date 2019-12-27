@@ -79,28 +79,55 @@ DatabaseReference myRef,towDRef;
                 String contact = dataSnapshot.child("userContact").getValue().toString();
                 String callerID = dataSnapshot.child("userId").getValue().toString();
                 String status=dataSnapshot.child("status").getValue().toString();
+                String pay = dataSnapshot.child("payment").getValue().toString();
                 String fareS = dataSnapshot.child("fare").getValue().toString();
                 DecimalFormat d = new DecimalFormat("0.00");
                 double fare = Double.parseDouble(fareS);
                 String fareL=d.format(fare);
-
-                if(userId.equals(towId) && status.equals("Pending")){
-                    String text = "Caller Name: "+callerName
-                            +"\nContact: "+contact+"\nDrop off Location: "+locName+"\nFare: RM"+fareL+"\nStatus: "+status;
-                    mReqList.add(text);
-                    callerId.add(callerID);
-                    reqId.add(requestId);
-                    statusList.add(status);
-                    rArrayAdapter.notifyDataSetChanged();
-                }else if(userId.equals(towId) && status.equals("Accepted")){
-                    String text = "Caller Name: "+callerName
-                            +"\nContact: "+contact+"\nDrop off Location: "+locName+"\nFare: RM"+fareL+"\nStatus: "+status;
-                    mReqList.add(text);
-                    callerId.add(callerID);
-                    reqId.add(requestId);
-                    statusList.add(status);
-                    rArrayAdapter.notifyDataSetChanged();
+                if(rArrayAdapter.getCount()!=0){
+                    mReqList.clear();
+                    callerId.clear();
+                    reqId.clear();
+                    statusList.clear();
+                    if(userId.equals(towId) && status.equals("Pending")){
+                        String text = "Caller Name: "+callerName
+                                +"\nContact: "+contact+"\nDrop off Location: "+locName+"\nFare: RM"+fareL+"\nStatus: "+status+"\nPayment type: "+pay;
+                        mReqList.add(text);
+                        callerId.add(callerID);
+                        reqId.add(requestId);
+                        statusList.add(status);
+                        rArrayAdapter.notifyDataSetChanged();
+                    }else if(userId.equals(towId) && status.equals("Accepted")){
+                        String text = "Caller Name: "+callerName
+                                +"\nContact: "+contact+"\nDrop off Location: "+locName+"\nFare: RM"+fareL+"\nStatus: "+status+"\nPayment type: "+pay;
+                        mReqList.add(text);
+                        callerId.add(callerID);
+                        reqId.add(requestId);
+                        statusList.add(status);
+                        rArrayAdapter.notifyDataSetChanged();
+                    }
+                }else{
+                    if(userId.equals(towId) && status.equals("Pending")){
+                        String text = "Caller Name: "+callerName
+                                +"\nContact: "+contact+"\nDrop off Location: "+locName+"\nFare: RM"+fareL+"\nStatus: "+status+"\nPayment type: "+pay;
+                        mReqList.add(text);
+                        callerId.add(callerID);
+                        reqId.add(requestId);
+                        statusList.add(status);
+                        rArrayAdapter.notifyDataSetChanged();
+                    }else if(userId.equals(towId) && status.equals("Accepted")){
+                        String text = "Caller Name: "+callerName
+                                +"\nContact: "+contact+"\nDrop off Location: "+locName+"\nFare: RM"+fareL+"\nStatus: "+status+"\nPayment type: "+pay;
+                        mReqList.add(text);
+                        callerId.add(callerID);
+                        reqId.add(requestId);
+                        statusList.add(status);
+                        rArrayAdapter.notifyDataSetChanged();
+                    }
                 }
+
+
+
             }
 
             @Override

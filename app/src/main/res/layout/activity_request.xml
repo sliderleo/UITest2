@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/background"
+    android:background="@color/colorMatte"
     tools:context=".Request" >
 <RelativeLayout
     android:layout_width="match_parent"
@@ -31,6 +31,7 @@
         android:id="@+id/request_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
         android:text="@string/request"
         android:textAlignment="center"
         android:textColor="@color/white"
@@ -54,7 +55,7 @@
             android:textAlignment="center"
             android:padding="10dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="39dp"/>
     </androidx.cardview.widget.CardView>
 
 
@@ -62,9 +63,10 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/mapR"
         android:layout_below="@+id/cv_car_spinner"
+        android:layout_marginTop="5dp"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="450dp"
+        android:layout_height="320dp"
         />
 
     <TextView
@@ -72,21 +74,34 @@
         android:layout_below="@+id/mapR"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Selected Workshop:"
+        android:text="Selected Workshop: None"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="14sp"
         android:textStyle="bold"
-        android:layout_margin="5dp"
+        android:layout_margin="2dp"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="-16dp" />
+
+    <TextView
+        android:id="@+id/tow_text"
+        android:layout_below="@+id/selected_workshop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Available Tow Car Driver"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_margin="2dp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="-16dp"/>
 
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_tow_spinner"
-        android:layout_below="@+id/selected_workshop"
+        android:layout_below="@+id/tow_text"
         app:cardCornerRadius="20dp"
-        android:layout_marginBottom="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <ListView
@@ -102,7 +117,7 @@
         android:id="@+id/fare_price"
         android:textColor="@color/white"
         android:textSize="15sp"
-        android:text="Fare"
+        android:text="Price: None"
         android:textAlignment="center"
         android:textStyle="bold"
         android:layout_margin="5dp"
@@ -111,44 +126,50 @@
         android:layout_height="wrap_content"/>
 
     <androidx.cardview.widget.CardView
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="2dp"
-        android:id="@+id/cv_request_button"
-        app:cardCornerRadius="25dp"
         android:layout_below="@+id/fare_price"
-        android:background="@color/cyan"
+        android:id="@+id/cv_pay_spinner"
+        app:cardCornerRadius="20dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+    <Spinner
+        android:id="@+id/payment_spinner"
+        android:entries="@array/payment_method"
+        android:textAlignment="center"
+        android:padding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="37dp"/>
+    </androidx.cardview.widget.CardView>
+
         <Button
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/cv_pay_spinner"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp"
             android:text="REQUEST"
             android:textColor="@color/white"
             android:textStyle="bold"
             android:textSize="30sp"
             android:id="@+id/request_button"
             android:background="@drawable/custom_button_green"
-            android:layout_width="match_parent"
+            android:layout_width="190dp"
             android:layout_height="wrap_content"/>
-    </androidx.cardview.widget.CardView>
 
-    <androidx.cardview.widget.CardView
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="20dp"
-        android:id="@+id/cv_request_list_button"
-        app:cardCornerRadius="25dp"
-        android:layout_below="@+id/cv_request_button"
-        android:background="@color/cyan"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
         <Button
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/cv_pay_spinner"
+            android:layout_marginTop="5dp"
             android:text="Request List"
+            android:layout_marginRight="5dp"
             android:textColor="@color/white"
             android:textStyle="bold"
-            android:textSize="30sp"
+            android:textSize="25sp"
             android:id="@+id/request_list_button"
             android:background="@drawable/custom_button"
-            android:layout_width="match_parent"
+            android:layout_width="190dp"
             android:layout_height="wrap_content"/>
-    </androidx.cardview.widget.CardView>
+
 
 </RelativeLayout>
-</ScrollView>
+</RelativeLayout>

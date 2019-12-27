@@ -13,6 +13,8 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -38,6 +40,7 @@ import com.google.firebase.database.ValueEventListener;
 public class Workshop extends FragmentActivity implements OnMapReadyCallback , GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private ChildEventListener mChildEventListener;
     private DatabaseReference mWorkshop;
+    ImageButton backbtn;
     private FirebaseDatabase database;
     Marker marker,wMarker;
     private GoogleMap mMap;
@@ -55,7 +58,7 @@ public class Workshop extends FragmentActivity implements OnMapReadyCallback , G
 
         database=FirebaseDatabase.getInstance();
         mWorkshop=database.getReference("Workshop");
-
+        backbtn=findViewById(R.id.back_button);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             checkUserLocationPermission();
@@ -65,6 +68,13 @@ public class Workshop extends FragmentActivity implements OnMapReadyCallback , G
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        backbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         mWorkshop.addChildEventListener(new ChildEventListener() {
             @Override

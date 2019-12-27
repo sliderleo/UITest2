@@ -30,6 +30,11 @@
         <item>Female</item>
     </string-array>
 
+    <string-array name="payment_method">
+        <item>Cash</item>
+        <item>Insurance Claim</item>
+    </string-array>
+
     <string-array name="insurance_company">
         <item>AIG Malaysia Insurance</item>
         <item>Allianz General Insurance</item>

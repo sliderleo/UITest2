@@ -58,7 +58,7 @@ import java.util.List;
 public class Request extends FragmentActivity implements OnMapReadyCallback , GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private TextView  tv_selected_workshop,tv_fare;
     ImageButton backBtn,refreshBtn;
-    private Spinner car_spinner1;
+    private Spinner car_spinner1,paymentSpinner;
     private GoogleMap mMap;
     private DatabaseReference myRef, carRef, towRef, userRef;
     private FirebaseDatabase database;
@@ -88,6 +88,7 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         car_spinner1 = findViewById(R.id.car_spinner);
+        paymentSpinner=findViewById(R.id.payment_spinner);
         tv_selected_workshop = findViewById(R.id.selected_workshop);
         tv_fare=findViewById(R.id.fare_price);
         requestBtn = findViewById(R.id.request_button);
@@ -227,18 +228,36 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 towIdList=new ArrayList<>();
-                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                    String dutyString = dataSnapshot1.child("duty").getValue().toString();
+                if(rArrayAdapter.getCount()!=0){
+                    mDriver.clear();
+                    towIdList.clear();
+                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                        String dutyString = dataSnapshot1.child("duty").getValue().toString();
 
-                    if (dutyString.equals("on")) {
-                        String driver = dataSnapshot1.child("name").getValue().toString();
-                        String towData=dataSnapshot1.child("userId").getValue().toString();
-                        mDriver.add(driver);
-                        towIdList.add(towData);
-                    } else if (dutyString == "off") {}
+                        if (dutyString.equals("on")) {
+                            String driver = dataSnapshot1.child("name").getValue().toString();
+                            String towData=dataSnapshot1.child("userId").getValue().toString();
+                            mDriver.add(driver);
+                            towIdList.add(towData);
+                        } else if (dutyString == "off") {}
+                    }
+
+                    rArrayAdapter.notifyDataSetChanged();
+                }else{
+                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                        String dutyString = dataSnapshot1.child("duty").getValue().toString();
+
+                        if (dutyString.equals("on")) {
+                            String driver = dataSnapshot1.child("name").getValue().toString();
+                            String towData=dataSnapshot1.child("userId").getValue().toString();
+                            mDriver.add(driver);
+                            towIdList.add(towData);
+                        } else if (dutyString == "off") {}
+                    }
+
+                    rArrayAdapter.notifyDataSetChanged();
                 }
 
-                rArrayAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -281,7 +300,7 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
             @Override
             public void onClick(View v) {
                 final String car = car_spinner1.getSelectedItem().toString();
-
+                final String payment =paymentSpinner.getSelectedItem().toString();
                 if(locationLat==0 && locationLong==0){
                     Toast.makeText(Request.this,"Please select a workshop!" , Toast.LENGTH_SHORT).show();
                 }else if(mDriver.isEmpty() && towIdList.isEmpty()){
@@ -303,7 +322,7 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
                                     DatabaseReference reqRef=database.getReference().child("Request");
                                     String reqId=reqRef.push().getKey();
 
-                                    RequestInfo info = new RequestInfo(nameS,contactS,userLat,userLong,locationLat,locationLong,locationName,id,driverName,Dname,car,price,"Pending",reqId,carinsurance);
+                                    RequestInfo info = new RequestInfo(nameS,contactS,userLat,userLong,locationLat,locationLong,locationName,id,driverName,Dname,car,price,"Pending",reqId,carinsurance,payment);
                                     reqRef.child(reqId).setValue(info);
                                     Toast.makeText(Request.this,"Request Successfully" , Toast.LENGTH_SHORT).show();
                                 }
@@ -354,15 +373,15 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
                 dest_location.setLatitude(locationLat);
                 dest_location.setLongitude(locationLong);
                 double distance = (mylocation.distanceTo(dest_location))/1000;
-                if(distance > 30){
-                    double newd  = distance-30;
+                if(distance >20){
+                    double newd  = distance-20;
                     price = (newd*2.5)+80;
                 }else{
                     price=80;
                 }
 
                 DecimalFormat d = new DecimalFormat("0.00");
-                tv_fare.setText("Fare price: RM"+d.format(price));
+                tv_fare.setText("Price: RM"+d.format(price));
                 return true;
 
             }
@@ -417,7 +436,7 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
 
 
 
-        currentUserLocationMarker = mMap.addMarker(markerOptions);
+
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomBy(12));
 
