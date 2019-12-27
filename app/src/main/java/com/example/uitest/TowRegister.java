@@ -156,7 +156,7 @@ public class TowRegister extends AppCompatActivity implements InsuranceDialog.on
                     Toast.makeText(TowRegister.this, "Insurance coverage is empty!", Toast.LENGTH_SHORT).show();
                 }else{
                     FileUploader();
-                    UserInfo userInfo=new UserInfo(name,spinnerGender,"Tow Car Driver",dob,contactString,desc,"0");
+                    UserInfo userInfo=new UserInfo(name,spinnerGender,"Tow Car Driver",dob,contactString,desc,id,"0");
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                     DatabaseReference myRef = database.getReference().child("Users").child(id);
                     myRef.setValue(userInfo);

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/colorMatte"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AdminViewSuspend">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/img_back"
+            android:src="@drawable/back_white"
+            android:layout_marginTop="5dp"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_alignParentLeft="true"
+            android:background="@null"/>
+
+        <TextView
+            android:text="Suspended Users"
+            android:id="@+id/title_text"
+            android:layout_marginTop="5dp"
+            android:textSize="25sp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:layout_centerHorizontal="true"
+            android:textAlignment="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:layout_below="@id/title_text"
+            android:textAlignment="center"
+            android:text="All the suspended and inactive users are shown here"
+            android:layout_centerHorizontal="true"
+            android:textSize="15sp"
+            android:textColor="@color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </RelativeLayout>
+
+
+    <ListView
+        android:id="@+id/user_listview"
+        android:layout_marginTop="80dp"
+        android:background="@color/colorGrey"
+        android:layout_width="match_parent"
+        android:layout_height="500dp">
+
+    </ListView>
+
+    <Button
+        android:layout_below="@+id/user_listview"
+        android:text="Active"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="30sp"
+        android:id="@+id/active_button"
+        android:background="@drawable/custom_button_green"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</RelativeLayout>

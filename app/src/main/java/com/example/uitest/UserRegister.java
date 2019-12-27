@@ -123,7 +123,7 @@ public class UserRegister extends AppCompatActivity {
                     Toast.makeText(UserRegister.this,"DOB is empty!",Toast.LENGTH_SHORT).show();
                 }else if (!(name.isEmpty() && dob.isEmpty())){
                     FileUploader();
-                    UserInfo userInfo=new UserInfo(name,spinnerGender,"Driver",dob,contactString,desc,"1");
+                    UserInfo userInfo=new UserInfo(name,spinnerGender,"Driver",dob,contactString,desc,id,"1");
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                     DatabaseReference myRef = database.getReference().child("Users").child(id);
                     myRef.setValue(userInfo);

@@ -117,15 +117,29 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String duty=dataSnapshot.child("duty").getValue().toString();
+                if(dataSnapshot.getValue() != null){
+                    String duty=dataSnapshot.child("duty").getValue().toString();
 
-                if(duty.equals("on")){
-                    tv_status.setText("Status: On Duty");
-                }else if(duty.equals("off")){
-                    tv_status.setText("Status: Off Duty");
-                }else if(duty.equals("busy")){
-                    tv_status.setText("Status: Busy");
+                    if(duty.equals("on")){
+                        tv_status.setText("Status: On Duty");
+                    }else if(duty.equals("off")){
+                        tv_status.setText("Status: Off Duty");
+                    }else if(duty.equals("busy")){
+                        tv_status.setText("Status: Busy");
+                    }
+                }else{
+                    FirebaseDatabase db = FirebaseDatabase.getInstance();
+                    final DatabaseReference dbRef = db.getReference().child("Status");
+                    readData(new MyCallback() {
+                        @Override
+                        public void onCallback(String name) {
+                            final String uname= name;
+                            Status s = new Status(name,userId,"off");
+                            dbRef.child(userId).setValue(s);
+                        }
+                    });
                 }
+
             }
 
             @Override
@@ -331,6 +345,23 @@ public class RequestTow extends AppCompatActivity implements OnMapReadyCallback,
     public void openDialog(){
         ViewUser dialog = new ViewUser();
         dialog.show(getSupportFragmentManager(),"View User");
+    }
+
+    public interface MyCallback {
+        void onCallback(String name);
+    }
+
+    public void readData(final MyCallback myCallback) {
+        database.getReference().child("Users").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String name = dataSnapshot.child("name").getValue().toString();
+                myCallback.onCallback(name);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
     }
 
 

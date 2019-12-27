@@ -171,7 +171,7 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
             }
         });
 
-        //.orderByChild("plate")
+
         Query query = carRef;
         query.addValueEventListener(new ValueEventListener() {
             @Override
@@ -281,8 +281,6 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
             @Override
             public void onClick(View v) {
                 final String car = car_spinner1.getSelectedItem().toString();
-                //final String towdriver=towIdList.get(spinner);
-
 
                 if(locationLat==0 && locationLong==0){
                     Toast.makeText(Request.this,"Please select a workshop!" , Toast.LENGTH_SHORT).show();
@@ -356,7 +354,13 @@ public class Request extends FragmentActivity implements OnMapReadyCallback , Go
                 dest_location.setLatitude(locationLat);
                 dest_location.setLongitude(locationLong);
                 double distance = (mylocation.distanceTo(dest_location))/1000;
-                price = (distance*3)+100;
+                if(distance > 30){
+                    double newd  = distance-30;
+                    price = (newd*2.5)+80;
+                }else{
+                    price=80;
+                }
+
                 DecimalFormat d = new DecimalFormat("0.00");
                 tv_fare.setText("Fare price: RM"+d.format(price));
                 return true;

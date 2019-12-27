@@ -26,7 +26,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AdminViewTow"></activity>
+        <activity android:name=".AdminViewSuspend"></activity>
+        <activity android:name=".AdminViewActive" />
+        <activity android:name=".AdminViewTow" />
         <activity android:name=".TowRegister" />
         <activity android:name=".RegisterType" />
         <!--
