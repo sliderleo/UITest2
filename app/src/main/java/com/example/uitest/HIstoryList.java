@@ -61,6 +61,7 @@ public class HIstoryList extends AppCompatActivity {
                 String contact = dataSnapshot.child("userContact").getValue().toString();
                 String callerID = dataSnapshot.child("userId").getValue().toString();
                 String status=dataSnapshot.child("status").getValue().toString();
+                String pay = dataSnapshot.child("payment").getValue().toString();
                 String fareS = dataSnapshot.child("fare").getValue().toString();
                 DecimalFormat d = new DecimalFormat("0.00");
                 double fare = Double.parseDouble(fareS);
@@ -69,7 +70,7 @@ public class HIstoryList extends AppCompatActivity {
                 if(userId.equals(towId) || userId.equals(callerID)){
 
                     if(status.equals("Ended")||status.equals("Cancelled")||status.equals("Rejected")){
-                        String text = "Request by: "+callerName+"\nTow Driver: "+towDriver+"\nDestination: "+locName+"\nFare: RM"+fareL+"\nStatus: "+status;
+                        String text = "Request by: "+callerName+"\nTow Driver: "+towDriver+"\nDestination: "+locName+"\nFare: RM"+fareL+"\nStatus: "+status+"\nPayment type: "+pay;
                         mReqList.add(text);
                         rArrayAdapter.notifyDataSetChanged();
                     }

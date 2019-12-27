@@ -238,7 +238,7 @@ public class OnGoingUser extends FragmentActivity implements OnMapReadyCallback 
                 String fare =dataSnapshot.child("fare").getValue().toString();
                 double fareD=Double.parseDouble(fare);
                 DecimalFormat d = new DecimalFormat("0.00");
-                tv_fare.setText("Fare price: RM"+d.format(fareD));
+                tv_fare.setText("Price: RM"+d.format(fareD));
                 double workLat = Double.parseDouble(workLatS);
                 double workLong = Double.parseDouble(workLongS);
                 LatLng workloc = new LatLng(workLat,workLong);

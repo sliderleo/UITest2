@@ -257,7 +257,7 @@ public class OnGoingTow extends FragmentActivity implements OnMapReadyCallback ,
                 String car = dataSnapshot.child("car").getValue().toString();
                 double fareD=Double.parseDouble(fare);
                 DecimalFormat d = new DecimalFormat("0.00");
-                tv_fare.setText("Fare: RM"+d.format(fareD));
+                tv_fare.setText("Price: RM"+d.format(fareD));
                 tv_carplate.setText("Car Plate: "+car);
 
                 MarkerOptions markerOptionsUser = new MarkerOptions();

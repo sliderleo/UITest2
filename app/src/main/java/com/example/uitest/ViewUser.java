@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,10 +28,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ViewUser extends AppCompatDialogFragment {
     private EditText etName,etGender,etDate,etContact,etDesc,etRating;
+    private TextView tvCompany,tvInsurance;
     private String viewId;
     private int count=0,totalRating=0;
     CircleImageView imgv;
-    DatabaseReference myRef,mDatabaseRef,ratingRef;
+    DatabaseReference myRef,mDatabaseRef,ratingRef,companyRef;
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -46,7 +48,8 @@ public class ViewUser extends AppCompatDialogFragment {
         etDate=view.findViewById(R.id.view_dob);
         etDesc=view.findViewById(R.id.view_desc);
         etRating=view.findViewById(R.id.view_rating);
-
+        tvCompany=view.findViewById(R.id.view_company);
+        tvInsurance=view.findViewById(R.id.view_insurance);
         etName.setEnabled(false);
         etName.setFocusable(false);
 
@@ -68,6 +71,25 @@ public class ViewUser extends AppCompatDialogFragment {
         final FirebaseDatabase mdatabase = FirebaseDatabase.getInstance();
         mDatabaseRef= mdatabase.getReference().child("Upload");
         ratingRef=mdatabase.getReference().child("Rating").child(viewId);
+        companyRef=mdatabase.getReference().child("Company").child(viewId);
+
+        companyRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue() != null){
+                    String cname = dataSnapshot.child("companyname").getValue().toString().trim();
+                    String ins = dataSnapshot.child("insurance").getValue().toString().trim();
+                    tvCompany.setText(cname);
+                    tvInsurance.setText(ins);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
         ratingRef.addChildEventListener(new ChildEventListener() {
             @Override
