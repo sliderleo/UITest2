@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/background"
+    android:background="@drawable/mattebg"
     tools:context=".User">
 
     <LinearLayout
@@ -27,7 +27,7 @@
                 android:layout_height="42dp"
                 android:layout_alignParentLeft="true"
                 android:background="@null"
-                android:src="@drawable/back_black"
+                android:src="@drawable/back_white"
                 />
 
 
@@ -37,7 +37,7 @@
             android:layout_height="40dp"
             android:layout_alignParentRight="true"
             android:background="@null"
-            android:src="@drawable/edit_black"
+            android:src="@drawable/edit_white"
             />
 
             <RelativeLayout
@@ -57,6 +57,7 @@
                 android:id="@+id/user_type"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:layout_below="@+id/userpic_rl"
                 android:text="User Information"
                 android:gravity="center"

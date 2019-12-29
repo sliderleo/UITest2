@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
+    android:background="@drawable/mattebg"
     tools:context=".Vehicle">
 
 <LinearLayout
@@ -66,15 +66,14 @@
         android:layout_below="@+id/rl_vehicle1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginLeft="13dp">
+        android:layout_marginTop="60dp"
+        >
 
         <ListView
             android:id="@+id/car_list_view"
             android:background="@color/colorGrey"
             android:layout_width="match_parent"
-            android:layout_height="300dp"/>
+            android:layout_height="350dp"/>
 
         <androidx.cardview.widget.CardView
             android:layout_marginTop="15dp"

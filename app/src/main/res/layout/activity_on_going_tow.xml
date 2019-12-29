@@ -48,7 +48,7 @@
         <TextView
             android:id="@+id/name_tv"
             android:text="Name:"
-            android:textSize="20sp"
+            android:textSize="15sp"
             android:textColor="@color/white"
             android:textStyle="bold"
             android:layout_marginTop="10dp"
@@ -60,7 +60,7 @@
         <TextView
             android:id="@+id/carplate_tv"
             android:text="Car Plate:"
-            android:textSize="20sp"
+            android:textSize="15sp"
             android:textColor="@color/white"
             android:textStyle="bold"
             android:layout_marginTop="3dp"
@@ -72,8 +72,8 @@
 
         <TextView
             android:id="@+id/fare_text"
-            android:text="Fare: "
-            android:textSize="20sp"
+            android:text="Price: "
+            android:textSize="15sp"
             android:textColor="@color/white"
             android:textStyle="bold"
             android:layout_marginTop="3dp"
